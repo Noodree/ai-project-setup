@@ -20,6 +20,8 @@ Hypotheses to test: H1 honest empty fields vs flagged starting number (was princ
 
 ## Decisions
 This list is the decision record for the case study and the video demo. Every decision Audrée makes goes here, dated, newest first.
+- 2026-11-23: case study angle set by Audrée: show Claude's multiple concepts and why inline won over the chatbot, privacy (only projects the viewer can open), accuracy vs speed (always estimate, flag certainty), alignment with the Premium squad's Pro plan work and ideal customer, first draft vs final, confidence banners side by side, link to clickable demo.
+- 2026-11-23: demo video done; project pushed to a new private GitHub repo named without "Harvest" (ai-project-setup). Next: the portfolio case study (user direction).
 - 2026-11-23: result line reads "Estimating 358 h from 5 projects"; demo mode added for recording (?demo hides the sketch strip, Ctrl+1 to 4 switch states) (user direction).
 - 2026-11-23: review triage. Applied: a clickable result line under Describe ("356 h from 5 projects", jumps to Tasks and hours) so the result is visible without auto-scrolling. Rejected: kind-of-work groups (full builds / refreshes) in the Conflicting banner; deciding which projects are similar is the AI's job, not the lead's. Ignored for now: the other review items (field-level confidence, shared Low confidence tag, Porchlight border contrast, Cancel confirm, design debt list) (user direction).
 - 2026-11-23: one avatar per task, a different teammate per task (user direction).
@@ -61,6 +63,8 @@ Less visible AI-feature work to add once the demo is made:
 - Strategy (draft, revision 4): https://claude.ai/artifact/6jWSRJicixLpU3ZmUBYLJZ
 - Concept B Admin spec: docs/designpowers/design/2026-11-09-concept-b-admin-spec.md
 - Concept B Admin sketch: concepts/b-inline/admin.html
+- Case study (Claude Doc): https://claude.ai/artifact/X7cFjjXgJxL1SBivnpDTbU ; images in case-study/images/
+- GitHub (private): https://github.com/Noodree/ai-project-setup
 - Demo script: demo/script.md
 - Draft archive (r0 to r5, for the portfolio case study): concepts/b-inline/archive/
 - Figma Tasks section for Audrée's own design work: EXPLORATIONS-AI, page "Tentative project", frame "Tasks section (for design)" (default and editing a task) plus local component "Tasks / Row"
