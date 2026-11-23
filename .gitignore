@@ -1,0 +1,7 @@
+.DS_Store
+.claude/
+demo/shots/
+demo/capture.mjs
+demo/world.html
+demo/recipe.json
+demo/storyboard.json

@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept B, inline: New project (Administrator)</title>
+<!--
+  HARVEST TENTATIVE PROJECT: CONCEPT B (INLINE), ADMINISTRATOR VIEW
+  A visual sketch. One file, no build step. Open it in a browser.
+  All clients, projects, people and numbers are invented. No real Harvest data.
+
+  Walk the core journey:
+    1. The "Describe the project" field has focus on load. Type a line (or just press Enter for the example).
+    2. Estimate fills the form. Read the banner. Optionally "Show references".
+    3. Cmd/Ctrl+Enter, or click "Save project".
+
+  Sketch controls (bottom centre) are NOT part of the design. They switch the evidence state.
+  Keys: "/" focus the description field, "R" toggle references, Cmd/Ctrl+Enter save, Esc close panel.
+  Tokens are copied from the Porchlight values in the earlier index.html sketch.
+-->
+<style>
+:root{
+  --gray-100:#eee;--gray-150:#ddd;--gray-200:#c6c6c6;--gray-600:#737472;--gray-700:#616261;--gray-800:#4a4b49;--gray-900:#343533;
+  --orange-100:#ffe7d9;--orange-200:#ffc5a3;--orange-300:#ffa26c;--orange-400:#ff8036;--orange-500:#fa5d00;--orange-600:#df4b00;--orange-700:#bf3b00;
+  --green-100:#daefdc;--green-500:#188433;--green-600:#11742a;
+  --blue-600:#2a59c1;
+  --yellow-100:#fff1cd;--red-700:#a8190f;--yellow-700:#8a5708;
+  --text:#1d1e1c;--text-muted:rgba(29,30,28,.7);--text-placeholder:rgba(29,30,28,.62);
+  --border:rgba(29,30,28,.3);--control-border:rgba(29,30,28,.25);
+  --surface:#fff;--nav-bg:#fff2eb;--upsell-bg:#fff8f1;
+  --cta:var(--green-500);--cta-hover:var(--green-600);--cta-disabled:#76bc82;
+  --radius-md:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow-panel:0 1px 2px rgba(52,53,51,.08),0 12px 32px rgba(52,53,51,.16);
+  --font:"Muoto VAR",Muoto,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --nav-w:84px;--logo:#ee6b2f;--panel-w:440px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;overflow:hidden}
+body{font:400 15px/1.4 var(--font);color:var(--text);background:var(--surface);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3,p,ul{margin:0}
+a{color:var(--blue-600)}
+:focus-visible{outline:2px solid var(--orange-500);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+kbd{font:500 12px var(--font);border:1px solid var(--gray-200);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:#fafafa}
+
+/* frame */
+.app{display:flex;flex:1;min-height:0;overflow:hidden}
+.nav{width:var(--nav-w);flex:none;padding:8px;display:flex;position:relative}
+.nav-in{flex:1;background:var(--nav-bg);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;padding:18px 0 12px;gap:0}
+.logo{display:flex;gap:4px;align-items:flex-start;height:40px;margin-bottom:22px}
+.logo i{display:block;width:8px;border-radius:4px;background:var(--logo)}
+.logo i:nth-child(1){height:36px}.logo i:nth-child(2){height:24px;margin-top:6px}.logo i:nth-child(3){height:36px;margin-top:4px}
+.collapse{position:absolute;right:-6px;top:54px;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--gray-150);box-shadow:0 1px 4px rgba(52,53,51,.15);display:grid;place-items:center;color:var(--gray-800)}
+.collapse svg{width:16px;height:16px}
+.nav-timer{width:56px;height:56px;border-radius:50%;background:var(--logo);color:#fff;display:grid;place-items:center;margin-bottom:12px}
+.nav-timer svg{width:24px;height:24px}
+.nav-more{width:48px;height:48px;border-radius:50%;background:#fff;display:grid;place-items:center;margin-bottom:14px;font-weight:700;letter-spacing:2px;font-size:16px}
+.nav-div{width:100%;border:0;border-top:1px solid var(--gray-150);margin:0 0 10px}
+.nav-item{width:46px;height:34px;border-radius:var(--radius-md);display:grid;place-items:center;margin-bottom:2px;color:var(--text)}
+.nav-item svg{width:20px;height:20px}
+.nav-item.on{background:var(--orange-100)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.scroll{flex:1;overflow:auto;padding:0 24px 24px}
+.wrap{max-width:1180px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:8px;height:72px;border-bottom:1px solid var(--gray-150);font-weight:500;font-size:20px}
+.topbar a{display:inline-flex;align-items:center;gap:10px}
+.topbar svg{width:22px;height:22px}
+.title-block{padding:28px 0 24px;border-bottom:1px solid var(--gray-150);margin-bottom:20px}
+.sub{font-size:18px;color:var(--text);margin-top:8px}
+.topbar a{color:var(--text);text-decoration:none}
+h1{font-size:48px;line-height:56px;font-weight:600;letter-spacing:-.01em}
+.title-row{display:flex;align-items:center;gap:12px;padding:20px 0 14px}
+
+/* buttons, badges */
+.btn{height:34px;padding:0 16px;border-radius:var(--radius-md);border:1px solid var(--control-border);background:#fff;font-weight:500;color:var(--gray-900);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:#f6f6f6}
+.btn.primary{background:var(--cta);border-color:transparent;color:#fff}
+.btn.primary:hover{background:var(--cta-hover)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.sm{height:28px;padding:0 10px;font-size:13px}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue-600);text-decoration:underline;cursor:pointer;font-size:inherit}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid transparent;white-space:nowrap;gap:4px}
+.badge.tentative{background:var(--orange-100);color:var(--orange-700)}
+.badge.live{background:var(--green-100);color:var(--green-600)}
+
+/* AI bar: same pattern as Harvest's live bar */
+.ai-bar{max-width:760px;margin:0 0 6px}
+.ai-bar label{display:block;font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:4px}
+.ai-row{display:flex;align-items:center;gap:8px;min-height:46px;padding:4px 6px 4px 14px;border:1px solid var(--gray-200);border-radius:999px;background:#fff}
+.ai-row:focus-within{border-color:var(--orange-400);box-shadow:0 0 0 3px var(--orange-100)}
+.ai-row input{flex:1;border:0;outline:0;min-width:0;background:none;font-size:16px}
+.ai-row input::placeholder{color:var(--text-placeholder)}
+.spark{color:var(--orange-500);flex:none}
+.send{height:32px;border-radius:999px;border:0;background:var(--orange-500);color:#fff;padding:0 14px;font-weight:500;cursor:pointer;flex:none}
+.send:hover{background:var(--orange-600)}
+.bar-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--text-muted);margin:6px 0 0 4px}
+.status{min-height:22px;font-size:14px;margin:10px 0 0 4px;display:flex;align-items:center;gap:8px}
+.spin{width:12px;height:12px;border:2px solid var(--orange-200);border-top-color:var(--orange-500);border-radius:50%;animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+/* form */
+.section{padding-top:8px}
+.section>h2{font-size:18px;font-weight:500;padding:18px 0 4px;border-top:1px solid var(--gray-100);margin-top:14px}
+.form-row{display:grid;grid-template-columns:190px 1fr;gap:16px;padding:9px 0;align-items:start}
+.form-row>.lbl{font-weight:500;padding-top:6px}
+.input,.select{height:34px;width:100%;border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:0 10px}
+.select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m2 4 4 4 4-4' stroke='%23616261' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.fld{max-width:360px}.fld.sm{max-width:170px}
+.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg-group{display:flex;gap:8px;flex-wrap:wrap}
+.seg{border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:7px 14px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.seg:has(input:checked){background:var(--orange-100);border-color:var(--orange-500)}
+.seg input{accent-color:var(--orange-500)}
+.hint{font-size:13px;color:var(--text-muted);margin-top:6px;line-height:18px}
+.muted{color:var(--text-muted)}
+
+/* suggested vs entered: text chip + dashed border + tint, never colour alone */
+.sico{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--orange-100);color:var(--orange-700);flex:none}
+.sico svg{width:12px;height:12px}
+.chipS{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;background:var(--orange-100);color:var(--orange-700);font-size:12px;font-weight:600;white-space:nowrap}
+.chipS svg{width:11px;height:11px}
+.chipA{font-size:12px;font-weight:500;color:var(--gray-700);white-space:nowrap}
+.sugg{background:var(--upsell-bg)!important;border:1.5px dashed var(--orange-700)!important}
+
+/* evidence headline: sticky, one line, always visible once an estimate exists */
+.headline{position:sticky;top:0;z-index:6;background:var(--upsell-bg);border:1.5px dashed var(--orange-700);border-radius:var(--radius-md);padding:12px 14px;margin:14px 0 4px}
+.headline .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.headline .strength{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;height:22px;padding:0 10px;border-radius:999px;background:var(--gray-100);color:var(--gray-900);white-space:nowrap}
+.headline.conflicting .strength,.headline.thin .strength{background:var(--yellow-100);color:var(--yellow-700)}
+.headline .txt{font-weight:600}
+.headline .sub2{margin-top:4px;font-size:14px;color:var(--text-muted)}
+.headline .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.send[disabled]{background:var(--gray-200);color:var(--gray-700);cursor:not-allowed}
+.skel{display:inline-block;height:14px;border-radius:6px;background:linear-gradient(90deg,var(--gray-100),#fafafa,var(--gray-100));background-size:200% 100%;animation:shimmer 1.4s linear infinite;vertical-align:middle}
+.headline.ghost{box-shadow:none}
+@keyframes shimmer{to{background-position:-200% 0}}
+[aria-busy="true"] .input,[aria-busy="true"] .select{background-image:linear-gradient(90deg,var(--gray-100),#fafafa,var(--gray-100));background-size:200% 100%;animation:shimmer 1.4s linear infinite;color:transparent;border-color:var(--gray-150)}
+[aria-busy="true"] .seg{opacity:.55}
+.ai-row input[readonly]{color:var(--text-muted)}
+
+/* tasks table */
+.t-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 0 6px}
+.t-head .grow{flex:1;min-width:240px}
+.t-card{border:1px solid var(--gray-150);border-radius:var(--radius-md);overflow:hidden;background:#fff}
+table{width:100%;border-collapse:collapse}
+th{font-size:13px;font-weight:500;color:var(--text-muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--gray-150);background:#fafafa}
+td{padding:10px 12px;border-bottom:1px solid var(--gray-100);vertical-align:top}
+tfoot td{border-bottom:0;background:#fafafa;font-weight:500}
+.num{text-align:right}
+td.task{min-width:240px}
+.over{display:flex;width:fit-content;gap:6px;align-items:flex-start;margin-top:8px;font-size:13px;background:#fde2dd;color:var(--red-700);padding:4px 10px;border-radius:6px;font-weight:600}
+.ob{color:var(--red-700);font-weight:600}
+.deet{margin-left:4px}
+td.act{border-left:1px solid var(--gray-150);padding-left:20px;width:1%}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;padding:0;list-style:none}
+.rchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--gray-200);background:#fff;border-radius:999px;padding:3px 4px 3px 12px;font-size:13px}
+.rchip .rh{color:var(--text-muted)}
+.rchip.off{background:#fafafa;color:var(--text-muted)}
+.rchip.off .rn{text-decoration:line-through}
+.rx{width:24px;height:24px;border-radius:50%;border:0;background:var(--gray-100);color:var(--gray-900);cursor:pointer;font-size:15px;line-height:1;display:grid;place-items:center}
+.rx:hover{background:var(--gray-200)}
+.over svg{width:13px;height:13px;margin-top:2px;flex:none}
+.bud{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap}
+.bud .input{width:104px;text-align:right}
+.rng{white-space:nowrap}
+.rng small{display:block;color:var(--text-muted);font-size:12px}
+.row-actions{display:flex;gap:4px;justify-content:flex-end;white-space:nowrap}
+.icon-btn{background:none;border:0;color:var(--blue-600);cursor:pointer;padding:4px 6px;font-size:13px;border-radius:6px;text-decoration:underline}
+tr.detail td{background:#fafafa;font-size:13px;padding:8px 12px 12px 28px}
+tr.detail ul{padding-left:0;list-style:none}
+.dl li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:3px 0;border-bottom:1px solid var(--gray-100);max-width:640px}
+.dl li.off{color:var(--text-muted);text-decoration:line-through}
+.dl li.off button{text-decoration:underline}
+.empty-state{padding:22px 16px;text-align:left}
+.empty-state p{max-width:620px;line-height:22px;margin-bottom:12px}
+.add-task{display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--gray-100)}
+
+/* evidence panel (Harvest's 440px push panel) */
+.panel{width:var(--panel-w);flex:none;margin:12px 12px 12px 0;border:1px solid var(--gray-200);border-radius:var(--radius-xl);box-shadow:var(--shadow-panel);background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.panel[hidden]{display:none}
+.p-head{display:flex;align-items:center;gap:8px;padding:14px 16px 8px}
+.p-head h2{font-size:16px;font-weight:600;flex:1}
+.p-x{width:30px;height:30px;border:0;background:none;color:var(--gray-700);font-size:20px;cursor:pointer;border-radius:6px}
+.p-body{flex:1;overflow:auto;padding:4px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.p-body h3{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+.p-body ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.comp{border:1px solid var(--gray-150);border-radius:var(--radius-md);padding:10px 12px}
+.comp.off{background:#fafafa;color:var(--text-muted)}
+.comp.on{background:#ffeee3;border-color:var(--orange-300)}
+.comp{display:grid;grid-template-columns:1fr auto;column-gap:8px;align-items:start}
+.comp .m{grid-column:1/-1}
+.ext{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--gray-700);opacity:0}
+.ext svg{width:15px;height:15px}
+.comp:hover .ext,.comp:focus-within .ext,.ext:focus-visible{opacity:1}
+.ext:hover{background:var(--gray-100)}
+@media (hover:none){.ext{opacity:1}}
+.lab{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+.comp label{display:flex;gap:8px;align-items:flex-start;font-weight:500;cursor:pointer}
+.comp input{margin-top:3px;width:16px;height:16px;accent-color:var(--orange-500)}
+.comp .m{font-size:13px;color:var(--text-muted);margin:4px 0 0 24px;line-height:19px}
+.group-card{border:1px solid var(--yellow-700);background:var(--yellow-100);border-radius:var(--radius-md);padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.group-card+.group-card{margin-top:8px}
+.group-card b{font-weight:600}
+.method{font-size:13px;line-height:19px;color:var(--text-muted);border-top:1px solid var(--gray-100);padding-top:12px}
+
+/* banners and dialog */
+.banner{display:flex;align-items:flex-start;gap:14px;background:var(--upsell-bg);border:1px solid var(--orange-300);border-radius:var(--radius-md);padding:12px 16px;margin:14px 0}
+.banner.ok{background:var(--green-100);border-color:var(--green-500)}
+.banner p{flex:1;line-height:21px}
+.backdrop{position:fixed;inset:0;background:rgba(29,30,28,.45);display:grid;place-items:center;z-index:30}
+.dialog{width:600px;max-width:calc(100vw - 32px);background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-panel);padding:24px}
+.dialog h2{font-size:22px;line-height:28px;font-weight:500;margin-bottom:10px}
+.dialog ul{margin:10px 0 18px;padding-left:20px;line-height:23px}
+.dialog .acts{display:flex;gap:8px}
+
+.savebar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 24px;border-top:1px solid var(--gray-100);background:#fff;flex-wrap:wrap}
+.savebar .note{font-size:13px;color:var(--text-muted);margin-left:6px}
+
+/* sketch controls: not part of the design */
+.sketch{order:-1;background:#1d1e1c;color:#fff;padding:6px 16px;display:flex;gap:16px;align-items:center;font-size:13px;flex-wrap:wrap}
+#thinOpt[hidden]{display:none}
+.sketch b{font-weight:600;color:#ffc5a3}
+.sketch button{background:#3a3b39;color:#fff;border:1px solid #6b6c6a;border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px}
+.sketch button[aria-pressed="true"]{background:#fff;color:#1d1e1c;border-color:#fff;font-weight:600}
+.sketch .grp{display:flex;gap:4px;align-items:center}
+.sketch .grp>span:first-child{margin-right:4px}
+
+@media (max-width:1000px){
+  .panel{position:fixed;right:8px;top:64px;bottom:8px;width:min(440px,calc(100vw - 16px));z-index:15;margin:0}
+  .nav{display:none}
+  .form-row{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){.spin,.skel,[aria-busy="true"] .input,[aria-busy="true"] .select{animation:none}.spin{border-top-color:var(--orange-200)}*{transition:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){.sugg{border-style:dashed}.sico{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--orange-100);color:var(--orange-700);flex:none}
+.sico svg{width:12px;height:12px}
+.chipS{border:1px solid CanvasText}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav" aria-label="Main (sketch)">
+    <div class="nav-in" aria-hidden="true">
+      <div class="logo"><i></i><i></i><i></i></div>
+      <div class="nav-timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13.5" r="7"/><path d="M12 10v4l2 1.5M10 3h4M12 3v3.5"/></svg></div>
+      <div class="nav-more">&middot;&middot;&middot;</div>
+      <hr class="nav-div">
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span>
+      <span class="nav-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-4 8 4-8 4zM4 12l8 4 8-4M4 16l8 4 8-4"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></span>
+    </div>
+    <span class="collapse" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></span>
+  </nav>
+
+  <div class="main">
+    <div class="scroll" id="scroll"><div class="wrap">
+      <div class="topbar"><a href="#" onclick="return false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to Projects</a></div>
+      <div class="title-block"><h1>New project</h1><p class="sub">Describe it, or fill in the form.</p></div>
+
+      <div id="banner"></div>
+      <div class="sr" id="srlive" role="status" aria-live="polite"></div>
+
+      <form class="ai-bar" id="aiform" role="search" aria-label="Describe the project" onsubmit="return false">
+        <label for="desc">Describe the project</label>
+        <div class="ai-row">
+          <svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.3L21 10l-6.8 1.7L12 18l-2.2-6.3L3 10l6.8-1.7z"/></svg>
+          <input id="desc" autocomplete="off" placeholder="Client and a few words, for example: Fernwood Outdoor Supply, brand website" aria-describedby="barhelp">
+          <button class="send" id="run" type="submit">Estimate</button>
+        </div>
+      </form>
+      <div class="bar-meta" id="barhelp">
+        <span><kbd>/</kbd> to focus</span>
+        <button class="linkbtn" id="fromPast" type="button">Start from a past project</button>
+      </div>
+      <div class="status" id="live" role="status" aria-live="polite"></div>
+
+      <div class="section">
+        <h2>Project</h2>
+        <div class="form-row"><label class="lbl" for="client">Client</label><div><select class="select fld" id="client"><option>Select a client</option></select></div></div>
+        <div class="form-row"><label class="lbl" for="pname">Project name</label><div><input class="input fld" id="pname"></div></div>
+        <div class="form-row"><label class="lbl" for="pcode">Project code</label><div><input class="input fld sm" id="pcode" placeholder="Optional"></div></div>
+        <div class="form-row"><label class="lbl" for="tags">Tags</label><div><input class="input fld" id="tags" placeholder="Add tags"></div></div>
+        <div class="form-row"><label class="lbl" for="cur">Billing currency</label><div><select class="select fld" id="cur"><option>Canadian Dollar (CAD)</option><option>US Dollar (USD)</option></select></div></div>
+        <div class="form-row"><span class="lbl">Dates</span><div class="inline"><label class="sr" for="d1">Start date</label><input class="input fld sm" id="d1" placeholder="Start date"><span aria-hidden="true">to</span><label class="sr" for="d2">End date</label><input class="input fld sm" id="d2" placeholder="End date"></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Billing and budget</h2>
+        <div class="form-row"><span class="lbl" id="ptl">Project type</span>
+          <div><div class="seg-group" role="radiogroup" aria-labelledby="ptl" id="ptype"></div><div id="ffnote"></div></div></div>
+        <div class="form-row"><label class="lbl" for="brate">Billable rate</label><div><select class="select fld" id="brate"><option>Task billable rate</option><option>Project billable rate</option><option>Person billable rate</option><option>No billable rate</option></select></div></div>
+        <div class="form-row"><label class="lbl" for="btype">Budget type</label>
+          <div><select class="select fld" id="btype"></select></div></div>
+      </div>
+
+      <div class="section" id="estimate-sec">
+        <h2 id="tasks-h">Tasks and hours</h2>
+        <div id="headline-host"></div>
+        <div id="tasks-host"></div>
+      </div>
+
+      <div class="section">
+        <h2>Team</h2>
+        <div class="t-card"><table><caption class="sr">Team</caption>
+          <thead><tr><th scope="col">Person</th><th scope="col">Project manager</th><th scope="col">Cost rate</th><th scope="col"><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td><b>Avery Chen</b></td><td><label><input type="checkbox" checked aria-label="Avery Chen manages this project"> Manages</label></td><td><select class="select" style="max-width:200px" aria-label="Cost rate, Avery Chen"><option>Default ($65/h)</option><option>Custom</option></select></td><td><div class="row-actions"><button class="icon-btn" type="button">Remove</button></div></td></tr>
+            <tr><td><b>Jordan Patel</b></td><td><label><input type="checkbox" aria-label="Jordan Patel manages this project"> Manages</label></td><td><select class="select" style="max-width:200px" aria-label="Cost rate, Jordan Patel"><option>Default ($58/h)</option><option>Custom</option></select></td><td><div class="row-actions"><button class="icon-btn" type="button">Remove</button></div></td></tr>
+            <tr><td><b>Sam Okafor</b></td><td><label><input type="checkbox" aria-label="Sam Okafor manages this project"> Manages</label></td><td><select class="select" style="max-width:200px" aria-label="Cost rate, Sam Okafor"><option>Default ($72/h)</option><option>Custom</option></select></td><td><div class="row-actions"><button class="icon-btn" type="button">Remove</button></div></td></tr>
+          </tbody></table>
+          <div class="add-task"><label class="muted" for="addperson">Add a person</label><select class="select" style="max-width:260px" id="addperson"><option>Choose a person</option><option>Riley Brooks</option><option>Dana Whitfield</option></select></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Invoices</h2>
+        <div class="form-row"><label class="lbl" for="due">Invoice due date</label><div><select class="select fld" id="due"><option>Upon receipt</option><option>NET 15</option><option>NET 30</option><option>NET 60</option></select></div></div>
+        <div class="form-row"><label class="lbl" for="po">PO number</label><div><input class="input fld sm" id="po"></div></div>
+        <div class="form-row"><label class="lbl" for="tax">Tax</label><div class="inline"><input class="input fld sm" id="tax" value="5"><span aria-hidden="true">%</span></div></div>
+        <div class="form-row"><label class="lbl" for="tax2">Second tax</label><div class="inline"><input class="input fld sm" id="tax2" value="9.975"><span aria-hidden="true">%</span></div></div>
+        <div class="form-row"><label class="lbl" for="disc">Discount</label><div class="inline"><input class="input fld sm" id="disc"><span aria-hidden="true">%</span></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Notes</h2>
+        <div class="form-row"><label class="lbl" for="notes">Notes</label><div><textarea class="input fld" style="height:72px;padding:8px 10px;max-width:560px" id="notes"></textarea></div></div>
+        <div class="form-row"><span class="lbl" id="rvl">Report visibility</span><div class="seg-group" role="radiogroup" aria-labelledby="rvl"><label class="seg"><input type="radio" name="rv" checked> Managers only</label><label class="seg"><input type="radio" name="rv"> Everyone on the project</label></div></div>
+        <div class="form-row"><span class="lbl">Forecast</span><div><label><input type="checkbox"> Also create this project in Forecast</label></div></div>
+      </div>
+    </div></div>
+
+    <div class="savebar" id="savebar"></div>
+  </div>
+
+  <aside class="panel" id="panel" aria-labelledby="ptitle" hidden></aside>
+</div>
+
+<div class="sketch" id="sketch" role="group" aria-label="Sketch controls, not part of the design">
+  <b>Sketch</b>
+  <span class="grp" id="stateBtns"><span>State:</span></span>
+  <span class="grp" id="thinOpt" hidden><span>Thin starts:</span><button type="button" data-thin="0" aria-pressed="true">Empty</button><button type="button" data-thin="1" aria-pressed="false">Flagged number</button></span>
+  <span class="grp" id="refOpt"><span>References:</span><button type="button" data-ref="tags" aria-pressed="true">Tags</button><button type="button" data-ref="links" aria-pressed="false">Links</button></span>
+  <button type="button" id="reset">Reset</button>
+  <span style="opacity:.75">Enter on an empty field runs the example</span>
+</div>
+
+<div id="dialog-host"></div>
+
+<script>
+/* ============ INVENTED DATA ============ */
+const TASKS=[
+ {id:'disc',name:'Discovery & strategy',rate:140},{id:'ux',name:'UX design',rate:135},{id:'vis',name:'Visual design',rate:135},
+ {id:'dev',name:'Development',rate:150},{id:'cont',name:'Content',rate:120},{id:'qa',name:'QA & launch',rate:110},{id:'pm',name:'Project management',rate:125}];
+// actual = tracked hours per task (order of TASKS), budget = what that project had budgeted for the task
+const POOL=[
+ {id:'p1',name:'Online shop rebuild',client:'Fernwood Outdoor Supply',kind:'build',year:2025,actual:[24,48,56,130,30,30,38],budget:[24,48,56,132,30,20,38]},
+ {id:'p2',name:'Brand website',client:'Tallgrass Co',kind:'build',year:2025,actual:[20,40,60,110,26,22,32],budget:[20,40,60,110,26,22,32]},
+ {id:'p3',name:'Website redesign',client:'Lumen Dental',kind:'build',year:2024,actual:[30,52,64,150,34,40,44],budget:[28,52,64,120,34,24,44]},
+ {id:'p4',name:'Brand website',client:'Ostrander Farms',kind:'build',year:2024,actual:[22,44,52,124,28,34,36],budget:[22,44,52,124,28,20,36]},
+ {id:'p5',name:'Marketing site',client:'Pinecrest Realty',kind:'build',year:2024,actual:[26,46,58,128,32,36,38],budget:[26,46,58,120,32,22,38]},
+ {id:'p6',name:'Homepage refresh',client:'Fernwood Outdoor Supply',kind:'refresh',year:2025,actual:[8,14,20,42,10,12,14],budget:[8,14,20,40,10,10,14]},
+ {id:'p7',name:'Landing pages refresh',client:'Tallgrass Co',kind:'refresh',year:2024,actual:[10,16,22,52,12,14,16],budget:[10,16,22,52,12,12,16]},
+ {id:'p8',name:'Client portal',client:'Marlowe Legal',kind:'build',year:2023,actual:[34,60,70,200,40,38,38],budget:[30,56,64,170,36,30,36]},
+ {id:'p9',name:'Label printing',client:'Kestrel Brewing',kind:'other',year:2024,actual:[12,null,40,null,14,null,10],budget:[12,null,40,null,14,null,10]}];
+const SCEN={
+ strong:{label:'Strong',client:'Fernwood Outdoor Supply',name:'Brand website',desc:'Fernwood Outdoor Supply, brand website',matched:['p1','p2','p3','p4','p5'],reason:''},
+ conflicting:{label:'Conflicting',client:'Fernwood Outdoor Supply',name:'Website update',desc:'Fernwood Outdoor Supply, website update',matched:['p1','p3','p8','p6','p7'],reason:''},
+ thin:{label:'Thin',client:'Fernwood Outdoor Supply',name:'Campaign microsite',desc:'Fernwood Outdoor Supply, campaign microsite',matched:['p6','p7'],reason:''},
+ none:{label:'None',client:'Juniper Veterinary',name:'Patient app',desc:'Juniper Veterinary, patient app',matched:[],reason:'New client, no similar work.'}};
+const TOTAL_PROJECTS=38; // projects the viewer can open (invented)
+const KIND={build:'full website build',refresh:'refresh',other:'other work'};
+const BTYPES={none:'None',th:'Total hours',hpt:'Hours per task',tf:'Total fees',fpt:'Fees per task',hpp:'Hours per person (not in this sketch)'};
+
+/* ============ STATE ============ */
+let S;
+function fresh(scen){
+  return {scen:scen||(S&&S.scen)||'strong',phase:'start',desc:'',type:'tm',btype:'hpt',plan:'mid',thinFlag:S?S.thinFlag:false,
+    rows:[],excl:{},tot:{status:'empty',v:null},fee:'',used:new Set(),added:[],panel:false,open:new Set(),client:'',name:'',usedAI:false};
+}
+S=fresh('strong');
+
+/* ============ ESTIMATE ENGINE (stand-in for the real one) ============ */
+const P=id=>POOL.find(p=>p.id===id);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const med=a=>{const s=[...a].sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:Math.round((s[n/2-1]+s[n/2])/2)};
+function cands(){return [...SCEN[S.scen].matched,...S.added].map(P)}
+function inc(){return cands().filter(p=>S.used.has(p.id))}
+function stats(){
+  const I=inc(),n=I.length;
+  const totals=I.map(p=>sum(p.actual.map(v=>v||0)));
+  let state='none';
+  if(n>=1&&n<=2)state='thin';
+  else if(n>=3)state=(Math.max(...totals)/Math.min(...totals)<=1.6)?'strong':'conflicting';
+  const per=TASKS.map((t,i)=>{
+    const ex=S.excl[t.id]||new Set();
+    const avail=I.filter(p=>p.actual[i]!=null).length;
+    const Ik=I.filter(p=>!ex.has(p.id));
+    const vals=Ik.map(p=>p.actual[i]).filter(v=>v!=null);
+    if(!vals.length)return {t,i,n:0,avail};
+    const pairs=Ik.filter(p=>p.actual[i]!=null&&p.budget[i]!=null).map(p=>({p,a:p.actual[i],b:p.budget[i]}));
+    const overs=pairs.filter(x=>x.a>x.b);
+    const diffs=overs.map(x=>x.a-x.b);
+    return {t,i,n:vals.length,avail,lo:Math.min(...vals),hi:Math.max(...vals),md:med(vals),of:pairs.length,over:overs.length,dlo:diffs.length?Math.min(...diffs):0,dhi:diffs.length?Math.max(...diffs):0,
+      flagged:pairs.length>=2&&overs.length/pairs.length>=0.5};
+  });
+  return {I,n,state,totals,tlo:n?Math.min(...totals):0,thi:n?Math.max(...totals):0,tmd:n?med(totals):0,per};
+}
+function canFill(st){return st.state==='strong'||(st.state==='thin'&&S.thinFlag)}
+function pick(x){return S.plan==='mid'?x.md:x.hi}
+function blended(st){const ps=st.per.filter(x=>x.n);const h=sum(ps.map(x=>x.md));return h?sum(ps.map(x=>x.md*x.t.rate))/h:130}
+function rateOf(id){return TASKS.find(t=>t.id===id).rate}
+
+// recalc: fills only values the lead has not touched. Entered values are never overwritten.
+function recalc(reason){
+  const st=stats(),fill=canFill(st);
+  const before=totalHours();
+  let kept=0,cleared=0;
+  S.rows.forEach(r=>{
+    if(r.status==='entered'){kept++;return}
+    const x=st.per[TASKS.findIndex(t=>t.id===r.id)];
+    if(fill&&x.n){r.h=pick(x);r.status='suggested'}
+    else{if(r.status==='suggested')cleared++;r.h=null;r.status='empty'}
+  });
+  const totalMode=S.btype==='th'||S.btype==='tf';
+  if(!totalMode){if(S.tot.status==='suggested')S.tot={status:'empty',v:null}}
+  else if(S.tot.status==='entered'){kept++}
+  else if(fill){
+    const hrs=S.plan==='mid'?st.tmd:st.thi;
+    S.tot.v=(S.btype==='tf')?Math.round(sum(st.per.filter(x=>x.n).map(x=>pick(x)*x.t.rate))):hrs;
+    S.tot.status='suggested';
+  }else{if(S.tot.status==='suggested')cleared++;S.tot={status:'empty',v:null}}
+  const after=totalHours();
+  let msg='';
+  if(reason){
+    msg=reason+'. ';
+    msg+=st.state==='none'?'No projects used. ':`${st.n} projects. `;
+    if(fill&&before!=null&&after!=null&&before!==after)msg+=`Total ${before} to ${after} h. `;
+    if(cleared)msg+=`${cleared} suggestion${cleared===1?'':'s'} cleared. `;
+    if(kept)msg+='Your edits kept.';
+  }
+  return msg.trim();
+}
+function totalHours(){
+  if(S.btype==='hpt'||S.btype==='fpt'){const r=S.rows.filter(r=>r.h!=null);return r.length?sum(r.map(r=>r.h)):null}
+  if(S.btype==='th')return S.tot.v;
+  if(S.btype==='tf'&&S.tot.v!=null)return Math.round(S.tot.v/blended(stats()));
+  return null;
+}
+
+/* ============ RENDER HELPERS ============ */
+const $=s=>document.querySelector(s);
+const money=v=>'$'+Math.round(v).toLocaleString('en-US');
+const sparkSvg='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.3L21 10l-6.8 1.7L12 18l-2.2-6.3L3 10l6.8-1.7z"/></svg>';
+const warnSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>';
+const extSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function say(t,busy){$('#live').innerHTML=t||busy?(busy?'<span class="spin" aria-hidden="true"></span>':'')+'<span>'+esc(t)+'</span>':''}
+function srsay(t){const e=$('#srlive');e.textContent='';setTimeout(()=>e.textContent=t,30)}
+// suggested marker: icon only, with an accessible name and a title
+function chip(status){return status==='suggested'?`<span class="sico" title="Suggested">${sparkSvg}<span class="sr">Suggested</span></span>`:''}
+const unitFor=()=>S.btype==='fpt'||S.btype==='tf'?'fee':'h';
+function disp(r){if(r.h==null)return '';return unitFor()==='fee'?Math.round(r.h*rateOf(r.id)):r.h}
+const nSug=()=>S.rows.filter(r=>r.status==='suggested').length+(S.tot.status==='suggested'?1:0);
+
+/* ============ RENDER ============ */
+function renderAll(){
+  const key=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.k;
+  renderTop();renderBilling();renderHeadline();renderTasks();renderSavebar();renderPanel();applyBusy();
+  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el&&!el.disabled)el.focus()}
+}
+// ghost state while the AI works: controls are disabled, the region says it is busy
+function applyBusy(){
+  const busy=S.phase==='matching';
+  ['#scroll','#savebar'].forEach(s=>$(s).setAttribute('aria-busy',busy));
+  document.querySelectorAll('#scroll input,#scroll select,#scroll button,#savebar button').forEach(el=>{
+    if(el.id==='desc')return;
+    if(busy){if(el.dataset.was===undefined)el.dataset.was=el.disabled?'1':'0';el.disabled=true}
+    else if(el.dataset.was!==undefined){el.disabled=el.dataset.was==='1';delete el.dataset.was}
+  });
+  $('#desc').readOnly=busy;
+  $('#run').textContent=busy?'Estimating...':'Estimate';$('#run').setAttribute('aria-disabled',busy);
+  $('#fromPast').hidden=!(S.phase==='start'&&!$('#desc').value.trim());
+}
+function renderTop(){
+  const sel=$('#client');
+  const clients=['Fernwood Outdoor Supply','Tallgrass Co','Lumen Dental','Juniper Veterinary','Kestrel Brewing'];
+  sel.innerHTML='<option value="">Select a client</option>'+clients.map(c=>`<option ${c===S.client?'selected':''}>${c}</option>`).join('');
+  $('#pname').value=S.name;
+  $('#banner').innerHTML=S.phase==='saved'?`<div class="banner ok"><p><b>Project saved.</b></p></div>`:'';
+}
+function renderBilling(){
+  const t=[['tm','Time & Materials'],['ff','Fixed Fee'],['nb','Non-Billable']];
+  $('#ptype').innerHTML=t.map(([v,l])=>`<label class="seg"><input type="radio" name="ptype" value="${v}" ${S.type===v?'checked':''} data-k="pt-${v}"> ${l}</label>`).join('');
+  const opts=Object.entries(BTYPES).filter(([k])=>S.type==='nb'?['none','th','hpt','hpp'].includes(k):true);
+  $('#btype').innerHTML=opts.map(([k,l])=>`<option value="${k}" ${S.btype===k?'selected':''} ${k==='hpp'?'disabled':''}>${l}</option>`).join('');
+  const st=stats();
+  if(S.type==='ff'){
+    let ref='';
+    if(st.n){
+      const ps=st.per.filter(x=>x.n);
+      ref=`<div class="hint">For reference: ${money(sum(ps.map(x=>x.lo*x.t.rate)))} to ${money(sum(ps.map(x=>x.hi*x.t.rate)))} at current rates.</div>`;
+    }
+    $('#ffnote').innerHTML=`<div class="inline" style="margin-top:10px"><label for="fee">Fee</label><input class="input" style="width:140px" id="fee" value="${esc(S.fee)}" placeholder="$" data-k="fee"></div>${ref}`;
+  }else $('#ffnote').innerHTML='';
+}
+const TAG={strong:'Consistent',conflicting:'Conflicting',thin:'Few matches',none:'No matches'};
+const TAGICON={strong:'&#10003;',conflicting:'&#8645;',thin:'&#8226;',none:'&#9675;'};
+function renderHeadline(){
+  const h=$('#headline-host');
+  if(S.phase==='start'){h.innerHTML='';return}
+  if(S.phase==='matching'){h.innerHTML='<div class="headline" aria-hidden="true"><span class="skel" style="width:90px"></span> <span class="skel" style="width:260px"></span><div style="margin-top:10px"><span class="skel" style="width:340px"></span></div></div>';return}
+  const st=stats(),n=st.n;
+  if(st.state==='none'){h.innerHTML='';return}   // nothing produced, so no banner
+  let txt='',sub='',acts='';
+  const refs=`<button class="btn sm" type="button" id="evbtn" data-k="evbtn" aria-expanded="${S.panel}" aria-controls="panel">${S.panel?'Hide references':'Show references'}</button>`;
+  const addLink='<button class="linkbtn" type="button" data-act="addfocus" data-k="addf">Add a past project</button>';
+  if(st.state==='strong'){txt=`Filled from ${n} past projects`;sub=`Tasks and hours below. They tracked ${st.tlo} to ${st.thi} h in total.`;acts=refs}
+  else if(st.state==='conflicting'){
+    txt=`${n} past projects disagree: ${st.tlo} to ${st.thi} h`;sub='Nothing filled in. Pick the kind of work that fits.';
+    acts=groups(st).map(x=>`<button class="btn sm" type="button" data-act="group" data-kind="${x.kind}" data-k="g-${x.kind}">Use the ${x.items.length} ${x.label}</button>`).join('')+refs;
+  }else{
+    if(S.thinFlag){txt=`Filled from only ${n} past ${n===1?'project':'projects'}`;sub='Weak base. Check these numbers.'}
+    else{txt=`Only ${n} close ${n===1?'match':'matches'}`;sub='Nothing filled in.'}
+    sub+=` <span>${addLink}</span>`;acts=refs;
+  }
+  h.innerHTML=`<div class="headline ${st.state}" role="group" aria-label="References">
+    <div class="top"><span class="txt">${esc(txt)}</span><span class="strength"><span aria-hidden="true">${TAGICON[st.state]}</span>${TAG[st.state]}</span></div>
+    <div class="sub2">${sub}</div>
+    <div class="acts">${acts}</div></div>`;
+}
+function groups(st){
+  const out=[];
+  [['build','full builds'],['refresh','refreshes']].forEach(([k,l])=>{
+    const items=st.I.filter(p=>p.kind===k);
+    if(items.length&&items.length<st.I.length){
+      const t=items.map(p=>sum(p.actual.map(v=>v||0)));
+      out.push({kind:k,label:l,items,lo:Math.min(...t),hi:Math.max(...t)});
+    }
+  });
+  return out;
+}
+function renderTasks(){$('#tasks-host').innerHTML=manualTable()}
+function manualTable(){
+  const st=stats();
+  const busy=S.phase==='matching';
+  const est=S.usedAI&&!busy;
+  const fees=unitFor()==='fee';
+  const totalMode=S.btype==='th'||S.btype==='tf';
+  const noBudget=S.btype==='none';
+  const sug=nSug();
+  let head='';
+  if(est&&(sug||canFill(st))){
+    head=`<div class="t-head"><div class="grow" id="tally">${sug?`${sug} suggestion${sug===1?'':'s'}`:''}</div>
+      ${canFill(st)&&!noBudget?`<div class="inline" role="group" aria-label="Fill from"><span class="muted">Fill from</span>
+        <label class="seg" style="padding:3px 10px"><input type="radio" name="plan" value="mid" ${S.plan==='mid'?'checked':''} data-k="plan-mid"> Middle</label>
+        <label class="seg" style="padding:3px 10px"><input type="radio" name="plan" value="hi" ${S.plan==='hi'?'checked':''} data-k="plan-hi"> Top</label></div>`:''}</div>`;
+  }
+  let rows='';
+  if(busy&&!S.rows.length){
+    rows=[200,160,230,140,190].map(w=>`<tr aria-hidden="true"><td><span class="skel" style="width:${w}px"></span></td><td><span class="skel" style="width:80px"></span></td><td><span class="skel" style="width:104px;height:34px"></span></td><td></td></tr>`).join('');
+  }else if(S.rows.length===0){
+    rows=`<tr><td colspan="5"><div class="empty-state"><p>${est&&st.state==='none'?'No similar projects. <button class="linkbtn" type="button" data-act="addfocus" data-k="addf">Start from a past project</button> or add tasks by hand.':'No tasks yet.'}</p></div></td></tr>`;
+  }
+  S.rows.forEach(r=>{
+    const ti=TASKS.findIndex(t=>t.id===r.id),t=TASKS[ti],x=st.per[ti];
+    const rng=x.n&&est?(fees?`${money(x.lo*t.rate)} to ${money(x.hi*t.rate)}`:`${x.lo} to ${x.hi} h`):(est&&x.avail?'None used':'');
+    const rngSub=x.n&&est?(x.n<st.n?`${x.n} of ${st.n} projects`:`${st.n} projects`):'';
+    const over=x.n&&est&&x.flagged?`<div class="over">${warnSvg}<span>Over by ${x.dlo} to ${x.dhi} h in ${x.over} of ${x.of}</span></div>`:'';
+    const note=r.status==='suggested'?`Suggested, range ${x.lo} to ${x.hi} hours.`:r.status==='entered'?'Entered by you.':'No value yet.';
+    let bud='';
+    if(noBudget)bud='<div class="bud"><span class="muted">No budget</span>@@DET@@</div>';
+    else if(totalMode)bud='<div class="bud"><span class="muted">In the total</span>@@DET@@</div>';
+    else bud=`<div class="bud">${fees?'<span aria-hidden="true">$</span>':''}<input class="input ${r.status==='suggested'?'sugg':''}" inputmode="numeric" data-row="${r.id}" data-k="in-${r.id}" aria-label="${fees?'Budget fees':'Budget hours'}, ${esc(t.name)}" aria-describedby="n-${r.id}" value="${disp(r)}" placeholder="${fees?'':'Hours'}">${fees?'':'<span aria-hidden="true">h</span>'}<span data-chip="${r.id}">${chip(r.status)}</span><span class="sr" id="n-${r.id}">${note}</span>@@DET@@</div>`;
+    const isOpen=S.open.has(r.id);
+    const det=x.avail&&est?`<button class="btn sm deet" type="button" data-act="detail" data-id="${r.id}" data-k="d-${r.id}" aria-expanded="${isOpen}">${isOpen?'Hide details':'Details'}<span class="sr"> for ${esc(t.name)}</span></button>`:'';
+    rows+=`<tr data-r="${r.id}"><td class="task"><b>${esc(t.name)}</b>${over}</td>
+      <td class="rng">${rng}${rngSub?`<small>${rngSub}</small>`:''}</td>
+      ${fees?`<td class="num">${money(t.rate)}/h</td>`:''}
+      <td>${bud.replace('@@DET@@',det)}</td>
+      <td class="act"><div class="row-actions"><button class="icon-btn" type="button" data-act="rm" data-id="${r.id}" data-k="rm-${r.id}" aria-label="Remove ${esc(t.name)}">Remove</button></div></td></tr>`;
+    if(isOpen&&x.avail){
+      const ex=S.excl[r.id]||new Set();
+      const lis=st.I.filter(p=>p.actual[ti]!=null).map(p=>{
+        const a=p.actual[ti],b=p.budget[ti],off=ex.has(p.id),nm=`${p.client}: ${p.name}`;
+        const ov=b!=null&&a>b?`<span class="ob">over by ${a-b} h</span>`:'';
+        const lbl=`${off?'Add back':'Remove'} ${nm} ${off?'to':'from'} ${t.name} estimate`;
+        const btn=`data-act="tex" data-id="${r.id}" data-pid="${p.id}" data-k="ex-${r.id}-${p.id}" aria-label="${esc(lbl)}"`;
+        if(refMode==='tags')return `<li class="rchip ${off?'off':''}"><span class="rn">${esc(nm)}</span><span class="rh">${a} h</span>${ov}<button class="rx" type="button" ${btn} title="${off?'Add back':'Remove'}">${off?'+':'&times;'}</button></li>`;
+        return `<li class="${off?'off':''}"><span>${esc(nm)}, ${a} h${b!=null?`, budget ${b} h`:''}${ov?' ('+ov+')':''}${off?' (left out)':''}</span><button class="icon-btn" type="button" ${btn}>${off?'Add back':'Remove'}</button></li>`}).join('');
+      rows+=`<tr class="detail"><td colspan="${fees?5:4}"><b>Tracked on ${esc(t.name)}</b><ul class="${refMode==='tags'?'rchips':'dl'}">${lis}</ul></td></tr>`;
+    }
+  });
+  const left=TASKS.filter(t=>!S.rows.find(r=>r.id===t.id));
+  const addrow=`<div class="add-task"><label class="muted" for="addtask">Add a task</label><select class="select" style="max-width:260px" id="addtask" data-k="addtask"><option value="">Choose a task</option>${left.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div>`;
+  let foot='';
+  if(S.rows.length||totalMode){
+    if(totalMode){
+      const x=S.tot,u=S.btype==='tf';
+      foot=`<tfoot><tr><td><b>Total ${u?'fees':'hours'}</b>${est&&st.n?`<div class="muted" style="font-weight:400;font-size:13px">Past projects: ${st.tlo} to ${st.thi} h</div>`:''}</td><td></td><td><div class="bud">${u?'<span aria-hidden="true">$</span>':''}<input class="input ${x.status==='suggested'?'sugg':''}" inputmode="numeric" data-tot="1" data-k="in-tot" aria-label="Total ${u?'fees':'hours'}" aria-describedby="n-tot" value="${x.v==null?'':x.v}">${u?'':'<span aria-hidden="true">h</span>'}<span data-chip="tot">${chip(x.status)}</span><span class="sr" id="n-tot">${x.status==='suggested'?'Suggested.':x.status==='entered'?'Entered by you.':'No value yet.'}</span></div></td><td></td></tr></tfoot>`;
+    }else if(!noBudget){
+      const th=totalHours();
+      const val=fees?(S.rows.some(r=>r.h!=null)?money(sum(S.rows.filter(r=>r.h!=null).map(r=>r.h*rateOf(r.id)))):'-'):(th==null?'-':th+' h');
+      foot=`<tfoot><tr><td>Total</td><td class="rng">${est&&st.n?`<span style="font-weight:400">Past projects: ${st.tlo} to ${st.thi} h</span>`:''}</td>${fees?'<td></td>':''}<td id="totalcell">${val}</td><td></td></tr></tfoot>`;
+    }
+  }
+  const cols=`<thead><tr><th scope="col">Task</th><th scope="col">Tracked</th>${fees?'<th scope="col" class="num">Rate</th>':''}<th scope="col">Budget</th><th scope="col"><span class="sr">Actions</span></th></tr></thead>`;
+  return `${head}<div class="t-card"><table><caption class="sr">Tasks, tracked range from past projects, and budget</caption>${cols}<tbody>${rows}</tbody>${foot}</table>${addrow}</div>`;
+}
+function renderSavebar(){
+  const b=$('#savebar');
+  if(S.phase==='saved')b.innerHTML=`<button class="btn" type="button" data-act="reset" data-k="again">Start another</button>`;
+  else b.innerHTML=`<button class="btn primary" type="button" data-act="save" data-k="save">Save project</button><button class="btn" type="button" data-act="reset" data-k="cancel">Cancel</button><span class="note"><kbd>&#8984;</kbd> <kbd>Enter</kbd> saves</span>`;
+}
+function renderPanel(){
+  const p=$('#panel');
+  if(!S.panel||S.phase==='start'||S.phase==='matching'){p.hidden=true;p.innerHTML='';return}
+  p.hidden=false;
+  const st=stats(),C=cands();
+  const rest=POOL.filter(x=>!C.find(c=>c.id===x.id));
+  const g=st.state==='conflicting'?groups(st):[];
+  p.innerHTML=`<div class="p-head"><h2 id="ptitle" tabindex="-1" data-k="ptitle">References</h2><button class="p-x" type="button" data-act="closepanel" aria-label="Close references" data-k="px">&times;</button></div>
+  <div class="p-body">
+   ${g.length?`<section aria-label="Kinds of work">${g.map(x=>`<div class="group-card"><span><b>${x.items.length} ${x.label}</b><br>${x.lo} to ${x.hi} h</span><button class="btn sm" type="button" data-act="group" data-kind="${x.kind}" data-k="pg-${x.kind}">Use these</button></div>`).join('')}</section>`:''}
+   ${C.length?`<ul aria-label="References">${C.map(c=>{const on=S.used.has(c.id),t=sum(c.actual.map(v=>v||0)),shared=c.actual.filter(v=>v!=null).length;
+      const nm=`${c.client}: ${c.name}`;
+      return `<li class="comp ${on?'on':'off'}"><label><input type="checkbox" data-act="toggle" data-id="${c.id}" data-k="c-${c.id}" ${on?'checked':''}><span>${esc(nm)}</span></label>
+      <a class="ext" href="#" target="_blank" rel="noopener" title="Open in a new window" aria-label="Open ${esc(nm)} in a new window" onclick="return false">${extSvg}</a>
+      <div class="m">${esc(KIND[c.kind])} &middot; ${c.year} &middot; ${t} h &middot; ${shared} of 7 tasks${c.client===SCEN[S.scen].client?' &middot; same client':''}</div></li>`}).join('')}</ul>`:'<p class="muted">No references.</p>'}
+   <div><label class="lab" for="addp">Add a past project</label>
+    <select class="select" id="addp" data-k="addp"><option value="">Choose a project</option>${rest.map(x=>`<option value="${x.id}">${esc(x.client)}: ${esc(x.name)}</option>`).join('')}</select></div>
+   <p class="method">Hours come from tracked time.</p>
+  </div>`;
+}
+
+/* ============ ACTIONS ============ */
+let timers=[];
+function run(){
+  const input=$('#desc');
+  const sc=SCEN[S.scen];
+  let d=input.value.trim();
+  if(!d){d=sc.desc;input.value=d}
+  timers.forEach(clearTimeout);timers=[];
+  S.desc=d;S.phase='matching';S.usedAI=true;
+  S.client=S.client||sc.client;S.name=S.name||sc.name;
+  S.used=new Set(sc.matched);S.added=[];S.excl={};
+  say(`Understood: new ${S.name.toLowerCase()} for ${S.client}. Matching against ${TOTAL_PROJECTS} projects you can open...`,true);
+  renderAll();
+  timers.push(setTimeout(()=>{say('Reading tracked time on the closest projects...',true)},900));
+  timers.push(setTimeout(()=>{
+    S.phase='ready';
+    const st=stats();
+    const keep=S.rows.filter(r=>r.status==='entered').map(r=>r.id);
+    S.rows=TASKS.filter(t=>keep.includes(t.id)||st.per[TASKS.indexOf(t)].n).map(t=>S.rows.find(r=>r.id===t.id)||{id:t.id,status:'empty',h:null});
+    recalc('');
+    say('');
+    srsay({strong:`Estimate ready. ${st.n} past projects, ${st.tlo} to ${st.thi} hours.`,
+      conflicting:`Estimate ready. ${st.n} past projects disagree. Budget left empty.`,
+      thin:`Estimate ready. Only ${st.n} close matches.`,none:'Estimate ready. No similar projects.'}[st.state]);
+    renderAll();
+  },1900));
+}
+function applyAndAnnounce(reason){
+  const m=recalc(reason);
+  say(m);srsay(m);renderAll();
+}
+let thinFlag=false;let refMode='tags';
+function setState(k){
+  S=fresh(k);S.thinFlag=thinFlag;
+  $('#desc').value='';
+  syncSketch();renderAll();say('');
+  run();
+}
+function syncSketch(){
+  document.querySelectorAll('#stateBtns button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S.scen));
+  document.querySelectorAll('#thinOpt button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.thin===+thinFlag)));
+  $('#thinOpt').hidden=S.scen!=='thin';
+}
+function save(){
+  if(S.phase==='matching')return;
+  S.phase='saved';S.panel=false;
+  say('');srsay('Project saved.');
+  renderAll();$('[data-k="again"]')&&$('[data-k="again"]').focus();
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act],#evbtn,#fromPast');
+  if(!el)return;
+  const a=el.dataset.act,id=el.dataset.id;
+  if(el.id==='evbtn'){S.panel=!S.panel;renderAll();if(S.panel)$('#ptitle').focus();return}
+  if(el.id==='fromPast'){S.usedAI=true;const sc=SCEN[S.scen];S.client=sc.client;S.name=sc.name;S.used=new Set();S.phase='ready';S.rows=[];S.panel=true;renderAll();const s=$('#addp');s&&s.focus();return}
+  if(a==='detail'){S.open.has(id)?S.open.delete(id):S.open.add(id);renderAll()}
+  else if(a==='rm'){S.rows=S.rows.filter(r=>r.id!==id);renderAll();say(`Removed ${TASKS.find(t=>t.id===id).name}.`)}
+  else if(a==='closepanel'){S.panel=false;renderAll();$('#evbtn')&&$('#evbtn').focus()}
+  else if(a==='group'){
+    const kind=el.dataset.kind,st=stats(),n=st.I.filter(p=>p.kind===kind).length;
+    S.used=new Set(st.I.filter(p=>p.kind===kind).map(p=>p.id));
+    applyAndAnnounce(`Using the ${n} ${kind==='build'?'full builds':'refreshes'}`);
+  }
+  else if(a==='tex'){
+    const id=el.dataset.id,pid=el.dataset.pid,p=P(pid),tn=TASKS.find(t=>t.id===id).name;
+    const set=S.excl[id]||(S.excl[id]=new Set());
+    const was=set.has(pid);was?set.delete(pid):set.add(pid);
+    recalc('');
+    const x=stats().per[TASKS.findIndex(t=>t.id===id)];
+    const m=`${was?'Added back':'Removed'} ${p.client}: ${p.name} ${was?'to':'from'} ${tn}. ${x.n?`Range ${x.lo} to ${x.hi} h.`:'No projects used.'}`;
+    say(m);srsay(m);renderAll();
+  }
+  else if(a==='addfocus'){S.panel=true;renderAll();const s=$('#addp');s&&s.focus()}
+  else if(a==='manual'){const s=$('#addtask');s&&s.focus()}
+  else if(a==='save'){save()}
+  else if(a==='reset'){S=fresh(S.scen);$('#desc').value='';say('');renderAll();$('#desc').focus()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.act==='toggle'){
+    const id=t.dataset.id,p=P(id);
+    t.checked?S.used.add(id):S.used.delete(id);
+    applyAndAnnounce(`${t.checked?'Added back':'Left out'} ${p.client}: ${p.name}`);
+  }else if(t.id==='addp'&&t.value){
+    const id=t.value,p=P(id);
+    S.added.push(id);S.used.add(id);
+    const st=stats();
+    TASKS.forEach((tk,i)=>{if(st.per[i].n&&!S.rows.find(r=>r.id===tk.id))S.rows.push({id:tk.id,status:'empty',h:null})});
+    S.rows.sort((a,b)=>TASKS.findIndex(x=>x.id===a.id)-TASKS.findIndex(x=>x.id===b.id));
+    applyAndAnnounce(`Added ${p.client}: ${p.name}`);
+  }else if(t.id==='addtask'&&t.value){
+    S.rows.push({id:t.value,status:'empty',h:null});S.rows.sort((a,b)=>TASKS.findIndex(x=>x.id===a.id)-TASKS.findIndex(x=>x.id===b.id));
+    renderAll();say(`Added ${TASKS.find(x=>x.id===t.value).name}.`);
+  }else if(t.name==='ptype'){S.type=t.value;if(S.type==='nb'&&(S.btype==='tf'||S.btype==='fpt'))S.btype='hpt';renderAll()}
+  else if(t.id==='btype'){
+    const old=S.btype,nu=t.value,st=stats();
+    const wasFee=old==='tf'||old==='fpt',isFee=nu==='tf'||nu==='fpt';
+    if(S.tot.status==='entered'&&S.tot.v!=null&&wasFee!==isFee){const b=blended(st);S.tot.v=isFee?Math.round(S.tot.v*b):Math.round(S.tot.v/b)}
+    else if(S.tot.status!=='entered'){S.tot={status:'empty',v:null}}
+    S.btype=nu;
+    applyAndAnnounce('Budget type: '+BTYPES[nu].toLowerCase());
+  }else if(t.name==='plan'){S.plan=t.value;applyAndAnnounce(`Filling from ${t.value==='mid'?'middle':'top'}`)}
+  else if(t.id==='client'){S.client=t.value}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.row){
+    const r=S.rows.find(x=>x.id===t.dataset.row),v=t.value.replace(/[^0-9.]/g,'');
+    r.status=v===''?'empty':'entered';
+    r.h=v===''?null:(unitFor()==='fee'?Math.round(+v/rateOf(r.id)):+v);
+    t.classList.remove('sugg');
+    const c=document.querySelector(`[data-chip="${r.id}"]`);if(c)c.innerHTML=chip(r.status);
+    const n=document.getElementById('n-'+r.id);if(n)n.textContent=r.status==='entered'?'Entered by you.':'No value yet.';
+    const tc=$('#totalcell');if(tc){const fees=unitFor()==='fee';const th=totalHours();tc.textContent=fees?(S.rows.some(q=>q.h!=null)?money(sum(S.rows.filter(q=>q.h!=null).map(q=>q.h*rateOf(q.id)))):'-'):(th==null?'-':th+' h')}
+    const sc=nSug();const tl=$('#tally');if(tl)tl.textContent=sc?`${sc} suggestion${sc===1?'':'s'}`:'';
+  }else if(t.dataset.tot){
+    const v=t.value.replace(/[^0-9.]/g,'');S.tot={status:v===''?'empty':'entered',v:v===''?null:+v};t.classList.remove('sugg');
+    $('[data-chip="tot"]').innerHTML=chip(S.tot.status);
+  }else if(t.id==='pname'){S.name=t.value}
+  else if(t.id==='fee'){S.fee=t.value}
+  else if(t.id==='desc'){$('#fromPast').hidden=!(S.phase==='start'&&!t.value.trim())}
+});
+$('#aiform').addEventListener('submit',e=>{e.preventDefault();if(S.phase!=='matching')run()});
+document.addEventListener('keydown',e=>{
+  const tag=(document.activeElement||{}).tagName;
+  const typing=/INPUT|SELECT|TEXTAREA/.test(tag);
+  if(e.key==='/'&&!typing){e.preventDefault();$('#desc').focus()}
+  else if((e.key==='r'||e.key==='R')&&!typing&&!e.metaKey&&!e.ctrlKey){const b=$('#evbtn');if(b){e.preventDefault();b.click()}}
+  else if(e.key==='Escape'&&S.panel){S.panel=false;renderAll();const b=$('#evbtn');b&&b.focus()}
+  else if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();if(S.phase==='ready'||S.phase==='start')save()}
+});
+document.querySelectorAll('#refOpt button').forEach(b=>b.onclick=()=>{refMode=b.dataset.ref;document.querySelectorAll('#refOpt button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.ref===refMode));renderAll()});
+// sketch controls
+Object.entries(SCEN).forEach(([k,v])=>{const b=document.createElement('button');b.type='button';b.dataset.s=k;b.textContent=v.label;b.setAttribute('aria-pressed',k===S.scen);b.onclick=()=>setState(k);$('#stateBtns').appendChild(b)});
+document.querySelectorAll('#thinOpt button').forEach(b=>b.onclick=()=>{thinFlag=!!+b.dataset.thin;S.thinFlag=thinFlag;syncSketch();setState('thin')});
+$('#reset').onclick=()=>{S=fresh('strong');S.thinFlag=thinFlag;$('#desc').value='';syncSketch();say('');renderAll();$('#desc').focus()};
+renderAll();syncSketch();$('#desc').focus();
+</script>
+</body>
+</html>

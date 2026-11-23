@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept B, inline: New project (Administrator)</title>
+<!--
+  HARVEST: CONCEPT B (INLINE), ADMINISTRATOR VIEW
+  A visual sketch. One file, no build step. Open it in a browser.
+  All clients, projects, people and numbers are invented. No real Harvest data.
+
+  Walk the core journey:
+    1. The "Describe the project" field has focus on load. Type a line (or just press Enter for the example).
+    2. Estimate fills the form. Read the banner. Optionally "Show references".
+    3. Cmd/Ctrl+Enter, or click "Save project".
+
+  Sketch controls (top strip) are NOT part of the design. They switch the evidence state.
+  Keys: "/" focus the description field, "R" toggle references, Cmd/Ctrl+Enter save, Esc close panel.
+  Look and feel: tokens, sidebar, icons and sizes are copied from the earlier index.html sketch (Porchlight values).
+  Dropdowns are custom listboxes (the app's browser pane cannot open native selects).
+-->
+<style>
+:root{
+  /* Porchlight tokens, same values as index.html */
+  --gray-100:#eee;--gray-150:#ddd;--gray-200:#c6c6c6;--gray-300:#bbb;--gray-400:#a5a5a4;--gray-500:#8d8e8d;--gray-600:#737472;--gray-700:#616261;--gray-800:#4a4b49;--gray-900:#343533;
+  --orange-100:#ffe7d9;--orange-200:#ffc5a3;--orange-300:#ffa26c;--orange-400:#ff8036;--orange-500:#fa5d00;--orange-600:#df4b00;--orange-700:#bf3b00;
+  --green-100:#daefdc;--green-500:#188433;--green-600:#11742a;--green-700:#0b6221;
+  --blue-100:#deedfd;--blue-500:#376bdd;--blue-600:#2a59c1;
+  --red-100:#fde2dd;--red-500:#d92f2f;--red-600:#be2923;--red-700:#a8190f;
+  --yellow-100:#fff1cd;--yellow-700:#8a5708;
+  --text:#1d1e1c;--text-muted:rgba(29,30,28,.7);--text-subtle:rgba(29,30,28,.5);--text-placeholder:rgba(29,30,28,.62);
+  --border:rgba(29,30,28,.3);--border-secondary:#ddd;--control-border:rgba(29,30,28,.25);
+  --surface:#fff;--surface-muted:rgba(29,30,28,.07);--nav-bg:#fff2eb;--upsell-bg:#fff8f1;
+  --cta:var(--green-500);--cta-hover:var(--green-600);--cta-disabled:#76bc82;
+  --radius-md:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow-panel:0 1px 2px rgba(52,53,51,.08),0 12px 32px rgba(52,53,51,.16);
+  --font:"Muoto VAR",Muoto,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --nav-w:72px;--panel-w:440px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;overflow:hidden;font:400 15px/1.4 var(--font);color:var(--text);background:var(--surface);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p,ul{margin:0}
+a{color:var(--blue-600)}
+:focus-visible{outline:2px solid var(--orange-500);outline-offset:1px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+kbd{font:500 12px var(--font);border:1px solid var(--gray-200);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:#fafafa}
+
+/* App frame (sidebar and header copied from index.html) */
+.app{display:flex;flex:1;min-height:0;overflow:hidden}
+.nav{width:var(--nav-w);flex:none;padding:8px;display:flex}
+.nav-in{flex:1;background:var(--nav-bg);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;padding:10px 0 12px;gap:2px}
+.nav-logo{height:36px;display:grid;place-items:center;margin-bottom:6px}
+.nav-timer{width:40px;height:40px;border-radius:50%;background:var(--orange-500);color:#fff;display:grid;place-items:center;border:0;margin-bottom:6px}
+.nav-more{width:34px;height:32px;border-radius:32px;background:#fff;border:1px solid rgba(29,30,28,.07);margin-bottom:12px;display:grid;place-items:center;font-weight:600;letter-spacing:1px;font-size:12px}
+.nav-item{width:46px;height:26px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text);margin-bottom:2px}
+.nav-item svg{width:16px;height:16px}
+.nav-item.on{background:var(--orange-100)}
+.nav-avatar{margin-top:auto;width:36px;height:36px;border-radius:50%;background:var(--orange-200);display:grid;place-items:center;font-size:13px;font-weight:600}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.scroll{flex:1;overflow:auto;padding:0 24px 24px}
+.wrap{max-width:1320px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:8px;height:64px;border-bottom:1px solid var(--gray-100);font-weight:500;font-size:18px}
+.topbar .back{font-size:15px;display:flex;align-items:center;gap:6px;background:none;border:0;padding:0;cursor:pointer;color:var(--text);text-decoration:none;font-weight:500}
+.topbar .back svg{width:16px;height:16px}
+.title-block{padding:24px 0 20px;border-bottom:1px solid var(--gray-100);margin-bottom:20px}
+h1{font-size:32px;line-height:40px;font-weight:500}
+.sub{font-size:15px;color:var(--text-muted);margin-top:4px}
+
+/* Buttons (index.html) */
+.btn{height:34px;padding:0 16px;border-radius:var(--radius-md);border:1px solid var(--control-border);background:#fff;font-weight:500;color:var(--gray-900);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:#f6f6f6}
+.btn.primary{background:var(--cta);border-color:transparent;color:#fff}
+.btn.primary:hover{background:var(--cta-hover)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.lg{height:42px;padding:0 20px;font-size:16px}
+.btn.sm{height:28px;padding:0 10px;font-size:13px}
+/* text buttons: no box, 44px hit area through the pseudo-element */
+.tbtn{background:none;border:0;padding:0;margin:0;color:var(--blue-600);font:500 13px/18px var(--font);cursor:pointer;position:relative;border-radius:4px;white-space:nowrap}
+.tbtn:hover{text-decoration:underline}
+.tbtn::after{content:"";position:absolute;inset:-13px -8px}
+.tbtn[disabled]{opacity:.55;cursor:not-allowed}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue-600);text-decoration:underline;cursor:pointer;font-size:inherit}
+.badge{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid transparent;white-space:nowrap;gap:4px}
+
+/* Describe bar (index.html .ai-bar) */
+.ai-bar{max-width:720px;margin:0 0 6px}
+.ai-bar label{display:block;font-size:13px;font-weight:500;color:var(--gray-600);margin-bottom:4px}
+.ai-row{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 6px 4px 14px;border:1px solid var(--gray-200);border-radius:999px;background:#fff}
+.ai-row:focus-within{border-color:var(--orange-400);box-shadow:0 0 0 3px var(--orange-100)}
+.ai-row input{flex:1;border:0;outline:0;min-width:0;background:none}
+.ai-row input::placeholder{color:var(--text-placeholder)}
+.ai-row input[readonly]{color:var(--text-muted)}
+.spark{color:var(--orange-500);flex:none}
+.send{height:32px;border-radius:999px;border:0;background:var(--orange-500);color:#fff;padding:0 14px;font-weight:500;cursor:pointer;flex:none}
+.send:hover{background:var(--orange-600)}
+.send[disabled]{background:var(--gray-200);color:var(--gray-700);cursor:not-allowed}
+.bar-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--text-muted);margin:6px 0 0 4px}
+.status{min-height:22px;font-size:14px;margin:10px 0 0 4px;display:flex;align-items:center;gap:8px}
+.spin{width:12px;height:12px;border:2px solid var(--orange-200);border-top-color:var(--orange-500);border-radius:50%;animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+/* Form (index.html) */
+.section{padding-top:8px}
+.section>h2{font-size:18px;font-weight:500;padding:18px 0 4px;border-top:1px solid var(--gray-100);margin-top:14px}
+.form-row{display:grid;grid-template-columns:200px 1fr;gap:16px;padding:12px 0;align-items:start}
+.form-row>.lbl{font-weight:500;padding-top:6px;display:flex;align-items:center;gap:6px}
+.lbl .spark{width:12px;height:12px}
+.input,.select{height:34px;width:100%;border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:0 10px}
+.select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m2 4 4 4 4-4' stroke='%23616261' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;text-align:left;cursor:pointer;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd{position:relative;width:100%}
+.dd.w{width:auto}
+.dd-t{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb{position:fixed;z-index:60;margin:0;padding:4px;list-style:none;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-md);box-shadow:var(--shadow-panel);overflow:auto;min-width:160px}
+.lb[hidden]{display:none}
+.lb li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:7px 10px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.lb li.act{background:var(--gray-100)}
+.lb li[aria-selected="true"]{font-weight:500}
+.lb li[aria-disabled="true"]{color:var(--text-subtle);cursor:not-allowed}
+.lb li .ck{visibility:hidden;color:var(--orange-600);font-weight:600}
+.lb li[aria-selected="true"] .ck{visibility:visible}
+.ai-filled{background-color:var(--upsell-bg);border-color:var(--orange-300)}
+.fld{max-width:520px}.fld.sm{max-width:170px}
+.date{height:51px;width:150px;border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 10px;background:#fff;display:flex;flex-direction:column;justify-content:center}
+.date small{font-size:12px;color:var(--text-muted)}
+.date input{border:0;outline:0;background:none;padding:0;width:100%}
+.date:focus-within{outline:2px solid var(--orange-500);outline-offset:1px}
+.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg-group{display:flex;gap:8px;flex-wrap:wrap}
+.seg{border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:7px 14px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.seg:has(input:checked){background:var(--orange-100);border-color:var(--orange-400)}
+.seg:has(:focus-visible){outline:2px solid var(--orange-500);outline-offset:1px}
+.seg input{accent-color:var(--orange-500);margin:0}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:720px}
+.types .seg{align-items:flex-start;padding:9px 12px}
+.types .seg b{display:block;font-weight:500}
+.types .seg small{display:block;font-size:13px;color:var(--text-muted)}
+.types .seg input{margin-top:3px}
+.hint{font-size:13px;color:var(--text-muted);margin-top:6px;line-height:18px}
+.muted{color:var(--text-muted)}
+.check{display:flex;align-items:center;gap:8px;min-height:22px}
+.check input,td input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--orange-500)}
+
+/* AI-filled fields (index.html): sparkle by the field, pale orange fill, orange border */
+.aimark{display:inline-flex;color:var(--orange-500);flex:none}
+.aimark .spark{display:block}
+
+/* References banner: same fill and border as an AI-filled field (index.html .alert) */
+.headline{position:sticky;top:0;z-index:6;background:var(--upsell-bg);border:1px solid var(--orange-300);border-radius:var(--radius-md);padding:12px 16px;margin:14px 0 4px}
+.headline .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.headline .strength{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;height:20px;padding:0 8px;border-radius:999px;background:var(--gray-100);color:var(--gray-900);white-space:nowrap}
+.headline.conflicting .strength,.headline.thin .strength{background:var(--yellow-100);color:var(--yellow-700)}
+.headline .txt{font-weight:500}
+.headline .sub2{margin-top:4px;font-size:14px;color:var(--text-muted)}
+.headline .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.skel{display:inline-block;height:14px;border-radius:6px;background:linear-gradient(90deg,var(--gray-100),#fafafa,var(--gray-100));background-size:200% 100%;animation:shimmer 1.4s linear infinite;vertical-align:middle}
+@keyframes shimmer{to{background-position:-200% 0}}
+[aria-busy="true"] .input,[aria-busy="true"] .select{background-image:linear-gradient(90deg,var(--gray-100),#fafafa,var(--gray-100));background-size:200% 100%;animation:shimmer 1.4s linear infinite;color:transparent;border-color:var(--gray-150)}
+[aria-busy="true"] .seg{opacity:.55}
+[aria-busy="true"] .date{opacity:.55}
+
+/* Tasks table (index.html .t-card) */
+.t-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 0 6px}
+.t-head .grow{flex:1;min-width:240px}
+.t-card{border:1px solid var(--gray-150);border-radius:var(--radius-md);background:#fff}
+table{width:100%;border-collapse:collapse}
+th{font-size:13px;font-weight:500;color:var(--text-muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--gray-150)}
+td{padding:11px 12px;border-bottom:1px solid var(--gray-100);vertical-align:top}
+tbody tr:last-child td,tfoot td{border-bottom:0}
+tfoot td{font-weight:500;border-top:1px solid var(--gray-150)}
+.num{text-align:right}
+td.task{min-width:240px}
+td.task b{font-weight:500}
+.over{display:flex;width:fit-content;gap:6px;align-items:flex-start;margin-top:8px;font-size:13px;background:var(--red-100);color:var(--red-700);padding:4px 10px;border-radius:6px;font-weight:500}
+.over svg{width:13px;height:13px;margin-top:2px;flex:none}
+.ob{color:var(--red-700);font-weight:600}
+td.act{border-left:1px solid var(--gray-150);padding-left:20px;width:1%}
+.bud{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap}
+.bud .input{width:104px;text-align:right}
+.rng{white-space:nowrap}
+.rng small{display:block;color:var(--text-muted);font-size:12px}
+.row-actions{display:flex;gap:4px;justify-content:flex-end;white-space:nowrap}
+tr.detail td{background:#fafafa;font-size:13px;padding:10px 12px 14px 28px}
+tr.detail h3{font-size:13px;font-weight:500;margin-bottom:2px}
+tr.detail ul{padding-left:0;list-style:none}
+.dl li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:3px 0;border-bottom:1px solid var(--gray-100);max-width:640px}
+.dl li.off .rn{text-decoration:line-through;color:var(--text-muted)}
+.empty-state{padding:22px 16px;text-align:left}
+.empty-state p{max-width:620px;line-height:22px}
+.add-task{display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--gray-100)}
+
+/* Tag select (Porchlight, Figma 4431:37): container, default, error, disabled */
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;padding:0;list-style:none}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:32px;border:1px solid #fa5d00;background:#ffe7d9;font:400 12px/1 var(--font);color:#1d1e1c}
+.tag.err{border-color:#d92f2f}
+.tag.off{background:#eee;border-color:#bbb;color:#8d8e8d}
+.tag.off .tl{text-decoration:line-through}
+.tag .ob{font-weight:600}
+.tx{position:relative;display:inline-flex;width:16px;height:16px;padding:0;border:0;background:none;cursor:pointer;border-radius:50%;flex:none}
+.tx::after{content:"";position:absolute;inset:-14px}
+.tx svg{display:block}
+.tx.add svg{transform:rotate(45deg)}
+.tx:hover{background:rgba(29,30,28,.08)}
+.tx:focus-visible{outline-offset:2px}
+
+/* References panel (Harvest's 440px push panel, index.html .panel) */
+.panel{width:var(--panel-w);flex:none;margin:14px 14px 14px 0;border:1px solid var(--gray-200);border-radius:var(--radius-xl);box-shadow:var(--shadow-panel);background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.panel[hidden]{display:none}
+.p-head{display:flex;align-items:center;gap:8px;padding:12px 16px 8px}
+.p-head h2{font-size:14px;font-weight:500;flex:1}
+.p-x{width:26px;height:26px;border:0;background:none;color:var(--gray-600);font-size:18px;cursor:pointer;position:relative}
+.p-x::after{content:"";position:absolute;inset:-9px}
+.p-body{flex:1;overflow:auto;padding:4px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.p-body ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.comp{border:1px solid var(--gray-150);border-radius:var(--radius-md);padding:10px 12px}
+.comp.off{background:#fafafa;color:var(--text-muted)}
+.comp.on{background:#ffeee3;border-color:var(--orange-300)}
+.comp{display:grid;grid-template-columns:1fr auto;column-gap:8px;align-items:start}
+.comp .m{grid-column:1/-1}
+.comp .lo{font-size:12px;font-weight:500;color:var(--text-muted);border:1px solid var(--gray-300);border-radius:999px;padding:0 6px;margin-left:6px;white-space:nowrap}
+.ext{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--gray-700);opacity:0}
+.ext svg{width:15px;height:15px}
+.comp:hover .ext,.comp:focus-within .ext,.ext:focus-visible{opacity:1}
+.ext:hover{background:var(--gray-100)}
+@media (hover:none){.ext{opacity:1}}
+.lab{display:block;font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:6px}
+.comp label{display:flex;gap:8px;align-items:flex-start;font-weight:500;cursor:pointer}
+.comp input{margin-top:3px;width:16px;height:16px;accent-color:var(--orange-500)}
+.comp .m{font-size:13px;color:var(--text-muted);margin:4px 0 0 24px;line-height:19px}
+.group-card{border:1px solid var(--yellow-700);background:var(--yellow-100);border-radius:var(--radius-md);padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.group-card+.group-card{margin-top:8px}
+.group-card b{font-weight:500}
+.method{font-size:13px;line-height:19px;color:var(--text-muted);border-top:1px solid var(--gray-100);padding-top:12px}
+
+/* banner and dialog */
+.banner{display:flex;align-items:flex-start;gap:14px;background:var(--upsell-bg);border:1px solid var(--orange-300);border-radius:var(--radius-md);padding:12px 16px;margin:14px 0}
+.banner.ok{background:var(--green-100);border-color:var(--green-500)}
+.banner p{flex:1;line-height:21px}
+.banner b{font-weight:500}
+
+.savebar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 24px;border-top:1px solid var(--gray-100);background:#fff;flex-wrap:wrap}
+.savebar[hidden]{display:none}
+
+/* sketch controls: not part of the design */
+.sketch{order:-1;background:#1d1e1c;color:#fff;padding:6px 16px;display:flex;gap:16px;align-items:center;font-size:13px;flex-wrap:wrap}
+#thinOpt[hidden]{display:none}
+.sketch b{font-weight:600;color:#ffc5a3}
+.sketch button{background:#3a3b39;color:#fff;border:1px solid #6b6c6a;border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px}
+.sketch button[aria-pressed="true"]{background:#fff;color:#1d1e1c;border-color:#fff;font-weight:600}
+.sketch .grp{display:flex;gap:4px;align-items:center}
+.sketch .grp>span:first-child{margin-right:4px}
+
+@media (max-width:1000px){
+  .panel{position:fixed;right:8px;top:64px;bottom:8px;width:min(440px,calc(100vw - 16px));z-index:15;margin:0}
+  .nav{display:none}
+  .form-row{grid-template-columns:1fr;gap:4px}
+  .types{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.spin,.skel,[aria-busy="true"] .input,[aria-busy="true"] .select{animation:none}.spin{border-top-color:var(--orange-200)}*{transition:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){.ai-filled{border-style:dashed}.tag{border-color:CanvasText}.tag.off{border-style:dashed}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav" aria-label="Main (sketch)">
+    <div class="nav-in" aria-hidden="true">
+      <div class="nav-logo"><svg width="26" height="26" viewBox="0 0 26 26" aria-label="Harvest"><path fill="#fa5d00" d="M2 3h6v20H2zM18 3h6v20h-6zM10 3h2.500v8H10zM13.500 15H16v8h-2.500z"/></svg></div>
+      <button class="nav-timer" aria-label="Timer" tabindex="-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg></button>
+      <div class="nav-more">&middot;&middot;&middot;</div>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="2"/><path d="M12 6v2M12 16v2M15 8h-4c-.7 0-2 .4-2 2s1.3 2 2 2h2c.7 0 2 .4 2 2s-1.3 2-2 2H9"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.7 19.2V4.1l-6.6 4.4v10.7M12.7 8.7h6.5v10.5M2.8 19.2h18.4"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></span>
+      <span class="nav-item on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 13.4V5.2c0-.4.3-.7.7-.7h13.6c.4 0 .7.3.7.7v13.6c0 .4-.3.7-.7.7h-6.1M4.5 17.6l2.2 1.9L12 15"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="18" x="4" y="3" rx="2"/><path d="M8 8h8M8 12h8M8 16h6"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-3c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v3M4 3v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V3M8 7h6M8 3h8M8 21h8"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="m15 10-3.4 4-1.6-1.8"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></span>
+      <span class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 15.8 5.3-5.3 4.1 3.4L21 5.3M3 19.5h18"/></svg></span>
+      <div class="nav-avatar">AC</div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="scroll" id="scroll"><div class="wrap">
+      <div class="topbar"><a class="back" href="#" onclick="return false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to Projects</a></div>
+      <div class="title-block"><h1>New project</h1><p class="sub">Describe it, or fill in the form.</p></div>
+
+      <div id="banner"></div>
+      <div class="sr" id="srlive" role="status" aria-live="polite"></div>
+
+      <form class="ai-bar" id="aiform" role="search" aria-label="Describe the project" onsubmit="return false">
+        <label for="desc">Describe the project</label>
+        <div class="ai-row">
+          <svg class="spark" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path fill="currentColor" d="M6.96 2.39c.29-.78 1.4-.78 1.68 0a10.8 10.8 0 0 0 6.37 6.37c.78.29.78 1.4 0 1.68a10.8 10.8 0 0 0-6.37 6.37c-.29.78-1.4.78-1.68 0a10.8 10.8 0 0 0-6.37-6.37c-.78-.29-.78-1.4 0-1.68a10.8 10.8 0 0 0 6.37-6.37Z"/><path fill="currentColor" d="M15 0c-.09 0-.18.04-.22.15l-.1.28a3.9 3.9 0 0 1-2.24 2.25l-.28.1c-.21.08-.21.36 0 .44l.28.1a3.9 3.9 0 0 1 2.24 2.25l.1.28c.09.2.36.2.45 0l.1-.28a3.9 3.9 0 0 1 2.24-2.25l.28-.1c.21-.08.21-.36 0-.44l-.28-.1a3.9 3.9 0 0 1-2.24-2.25l-.1-.28C15.18.04 15.09 0 15 0Z"/></svg>
+          <input id="desc" autocomplete="off" placeholder="Client and a few words: Fernwood Outdoor Supply, brand website" aria-describedby="barhelp">
+          <button class="send" id="run" type="submit">Estimate</button>
+        </div>
+      </form>
+      <div class="bar-meta" id="barhelp">
+        <span><kbd>/</kbd> to focus</span>
+        <button class="linkbtn" id="fromPast" type="button">Start from a past project</button>
+      </div>
+      <div class="status" id="live" aria-hidden="true"></div>
+
+      <div class="section">
+        <h2>Project</h2>
+        <div class="form-row"><label class="lbl" id="client-l" for="client">Client<span id="client-mark"></span></label><div><div class="fld" id="client-host"></div><span class="sr" id="client-n"></span></div></div>
+        <div class="form-row"><label class="lbl" for="pname">Project name<span id="name-mark"></span></label><div><input class="input fld" id="pname" aria-describedby="name-n"><span class="sr" id="name-n"></span></div></div>
+        <div class="form-row"><label class="lbl" for="pcode">Project code</label><div><input class="input fld sm" id="pcode" placeholder="Optional"></div></div>
+        <div class="form-row"><label class="lbl" for="tags">Tags</label><div><input class="input fld" id="tags" placeholder="Add tags"></div></div>
+        <div class="form-row"><label class="lbl" id="cur-l" for="cur">Billing currency</label><div class="fld"><div class="dd-host" data-dd="Canadian Dollar (CAD)|US Dollar (USD)" data-id="cur" data-lby="cur-l"></div></div></div>
+        <div class="form-row"><span class="lbl">Dates</span><div class="inline"><label class="date"><small>Starts on</small><input id="d1"></label><span aria-hidden="true">to</span><label class="date"><small>Ends on</small><input id="d2"></label></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Billing and budget</h2>
+        <div class="form-row"><span class="lbl" id="ptl">Project type</span>
+          <div><div class="types" role="radiogroup" aria-labelledby="ptl" id="ptype"></div><div id="ffnote"></div></div></div>
+        <div class="form-row"><label class="lbl" id="brate-l" for="brate">Billable rate</label><div class="fld"><div class="dd-host" data-dd="Task billable rate|Project billable rate|Person billable rate|No billable rate" data-id="brate" data-lby="brate-l"></div></div></div>
+        <div class="form-row"><label class="lbl" id="btype-l" for="btype">Budget type</label>
+          <div class="fld"><div id="btype-host"></div></div></div>
+      </div>
+
+      <div class="section" id="estimate-sec">
+        <h2 id="tasks-h">Tasks and hours</h2>
+        <div id="headline-host"></div>
+        <div id="tasks-host"></div>
+      </div>
+
+      <div class="section">
+        <h2>Team</h2>
+        <div class="t-card"><table><caption class="sr">Team</caption>
+          <thead><tr><th scope="col">Person</th><th scope="col">Project manager</th><th scope="col">Cost rate</th><th scope="col"><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td><b style="font-weight:500">Avery Chen</b></td><td><label class="check"><input type="checkbox" checked aria-label="Avery Chen manages this project"> Manages</label></td><td><div class="dd-host" style="max-width:200px" data-dd="Default ($65/h)|Custom" data-label="Cost rate, Avery Chen"></div></td><td><div class="row-actions"><button class="tbtn" type="button" aria-label="Remove Avery Chen">Remove</button></div></td></tr>
+            <tr><td><b style="font-weight:500">Jordan Patel</b></td><td><label class="check"><input type="checkbox" aria-label="Jordan Patel manages this project"> Manages</label></td><td><div class="dd-host" style="max-width:200px" data-dd="Default ($58/h)|Custom" data-label="Cost rate, Jordan Patel"></div></td><td><div class="row-actions"><button class="tbtn" type="button" aria-label="Remove Jordan Patel">Remove</button></div></td></tr>
+            <tr><td><b style="font-weight:500">Sam Okafor</b></td><td><label class="check"><input type="checkbox" aria-label="Sam Okafor manages this project"> Manages</label></td><td><div class="dd-host" style="max-width:200px" data-dd="Default ($72/h)|Custom" data-label="Cost rate, Sam Okafor"></div></td><td><div class="row-actions"><button class="tbtn" type="button" aria-label="Remove Sam Okafor">Remove</button></div></td></tr>
+          </tbody></table>
+          <div class="add-task"><label class="muted" id="addperson-l" for="addperson">Add a person</label><div class="dd-host" style="width:260px" data-dd="Riley Brooks|Dana Whitfield" data-id="addperson" data-lby="addperson-l" data-ph="Choose a person"></div></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Invoices</h2>
+        <div class="form-row"><label class="lbl" id="due-l" for="due">Invoice due date</label><div class="fld"><div class="dd-host" data-dd="Upon receipt|NET 15|NET 30|NET 60" data-id="due" data-lby="due-l"></div></div></div>
+        <div class="form-row"><label class="lbl" for="po">PO number</label><div><input class="input fld sm" id="po"></div></div>
+        <div class="form-row"><label class="lbl" for="tax">Tax</label><div class="inline"><input class="input fld sm" id="tax" value="5"><span aria-hidden="true">%</span></div></div>
+        <div class="form-row"><label class="lbl" for="tax2">Second tax</label><div class="inline"><input class="input fld sm" id="tax2" value="9.975"><span aria-hidden="true">%</span></div></div>
+        <div class="form-row"><label class="lbl" for="disc">Discount</label><div class="inline"><input class="input fld sm" id="disc"><span aria-hidden="true">%</span></div></div>
+      </div>
+
+      <div class="section">
+        <h2>Notes</h2>
+        <div class="form-row"><label class="lbl" for="notes">Notes</label><div><textarea class="input fld" style="height:72px;padding:8px 10px;max-width:560px;resize:vertical" id="notes"></textarea></div></div>
+        <div class="form-row"><span class="lbl" id="rvl">Report visibility</span><div class="seg-group" role="radiogroup" aria-labelledby="rvl"><label class="seg"><input type="radio" name="rv" checked> Managers only</label><label class="seg"><input type="radio" name="rv"> Everyone on the project</label></div></div>
+        <div class="form-row"><span class="lbl">Forecast</span><div><label class="check"><input type="checkbox"> Also create this project in Forecast</label></div></div>
+      </div>
+    </div></div>
+
+    <div class="savebar" id="savebar"></div>
+  </div>
+
+  <aside class="panel" id="panel" aria-labelledby="ptitle" hidden></aside>
+</div>
+
+<div class="sketch" id="sketch" role="group" aria-label="Sketch controls, not part of the design">
+  <b>Sketch</b>
+  <span class="grp" id="stateBtns"><span>State:</span></span>
+  <span class="grp" id="thinOpt" hidden><span>Thin starts:</span><button type="button" data-thin="0" aria-pressed="true">Empty</button><button type="button" data-thin="1" aria-pressed="false">Flagged number</button></span>
+  <span class="grp" id="refOpt"><span>References:</span><button type="button" data-ref="tags" aria-pressed="true">Tags</button><button type="button" data-ref="links" aria-pressed="false">Links</button></span>
+  <button type="button" id="reset">Reset</button>
+  <span style="opacity:.75">Enter on an empty field runs the example</span>
+</div>
+
+<script>
+/* ============ INVENTED DATA ============ */
+const TASKS=[
+ {id:'disc',name:'Discovery & strategy',rate:140},{id:'ux',name:'UX design',rate:135},{id:'vis',name:'Visual design',rate:135},
+ {id:'dev',name:'Development',rate:150},{id:'cont',name:'Content',rate:120},{id:'qa',name:'QA & launch',rate:110},{id:'pm',name:'Project management',rate:125}];
+// actual = tracked hours per task (order of TASKS), budget = what that project had budgeted for the task
+const POOL=[
+ {id:'p1',name:'Online shop rebuild',client:'Fernwood Outdoor Supply',kind:'build',year:2025,actual:[24,48,56,130,30,30,38],budget:[24,48,56,132,30,20,38]},
+ {id:'p2',name:'Brand website',client:'Tallgrass Co',kind:'build',year:2025,actual:[20,40,60,110,26,22,32],budget:[20,40,60,110,26,22,32]},
+ {id:'p3',name:'Website redesign',client:'Lumen Dental',kind:'build',year:2024,actual:[30,52,64,150,34,40,44],budget:[28,52,64,120,34,24,44]},
+ {id:'p4',name:'Brand website',client:'Ostrander Farms',kind:'build',year:2024,actual:[22,44,52,124,28,34,36],budget:[22,44,52,124,28,20,36]},
+ {id:'p5',name:'Marketing site',client:'Pinecrest Realty',kind:'build',year:2024,actual:[26,46,58,128,32,36,38],budget:[26,46,58,120,32,22,38]},
+ {id:'p6',name:'Homepage refresh',client:'Fernwood Outdoor Supply',kind:'refresh',year:2025,actual:[8,14,20,42,10,12,14],budget:[8,14,20,40,10,10,14]},
+ {id:'p7',name:'Landing pages refresh',client:'Tallgrass Co',kind:'refresh',year:2024,actual:[10,16,22,52,12,14,16],budget:[10,16,22,52,12,12,16]},
+ {id:'p8',name:'Client portal',client:'Marlowe Legal',kind:'build',year:2023,actual:[34,60,70,200,40,38,38],budget:[30,56,64,170,36,30,36]},
+ {id:'p9',name:'Label printing',client:'Kestrel Brewing',kind:'other',year:2024,actual:[12,null,40,null,14,null,10],budget:[12,null,40,null,14,null,10]}];
+const SCEN={
+ strong:{label:'Strong',client:'Fernwood Outdoor Supply',name:'Brand website',desc:'Fernwood Outdoor Supply, brand website',matched:['p1','p2','p3','p4','p5']},
+ conflicting:{label:'Conflicting',client:'Fernwood Outdoor Supply',name:'Website update',desc:'Fernwood Outdoor Supply, website update',matched:['p1','p3','p8','p6','p7']},
+ thin:{label:'Thin',client:'Fernwood Outdoor Supply',name:'Campaign microsite',desc:'Fernwood Outdoor Supply, campaign microsite',matched:['p6','p7']},
+ none:{label:'None',client:'Juniper Veterinary',name:'Patient app',desc:'Juniper Veterinary, patient app',matched:[]}};
+const TOTAL_PROJECTS=38; // projects the viewer can open (invented)
+const KIND={build:'full website build',refresh:'refresh',other:'other work'};
+const BTYPES={none:'None',th:'Total hours',hpt:'Hours per task',tf:'Total fees',fpt:'Fees per task'};
+const CLIENTS=['Fernwood Outdoor Supply','Tallgrass Co','Lumen Dental','Juniper Veterinary','Kestrel Brewing'];
+const FILLED='Filled from past projects';
+
+/* ============ STATE ============ */
+let S;
+function fresh(scen){
+  return {scen:scen||(S&&S.scen)||'strong',phase:'start',desc:'',type:'tm',btype:'hpt',plan:'mid',thinFlag:S?S.thinFlag:false,
+    rows:[],excl:{},tot:{status:'empty',v:null},fee:'',used:new Set(),added:[],panel:false,open:new Set(),client:'',name:'',aiClient:false,aiName:false,usedAI:false};
+}
+S=fresh('strong');
+
+/* ============ ESTIMATE ENGINE (stand-in for the real one) ============ */
+const P=id=>POOL.find(p=>p.id===id);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const med=a=>{const s=[...a].sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:Math.round((s[n/2-1]+s[n/2])/2)};
+function cands(){return [...SCEN[S.scen].matched,...S.added].map(P)}
+function inc(){return cands().filter(p=>S.used.has(p.id))}
+function stats(){
+  const I=inc(),n=I.length;
+  const totals=I.map(p=>sum(p.actual.map(v=>v||0)));
+  let state='none';
+  if(n>=1&&n<=2)state='thin';
+  else if(n>=3)state=(Math.max(...totals)/Math.min(...totals)<=1.6)?'strong':'conflicting';
+  const per=TASKS.map((t,i)=>{
+    const ex=S.excl[t.id]||new Set();
+    const avail=I.filter(p=>p.actual[i]!=null).length;
+    const Ik=I.filter(p=>!ex.has(p.id));
+    const vals=Ik.map(p=>p.actual[i]).filter(v=>v!=null);
+    if(!vals.length)return {t,i,n:0,avail};
+    const pairs=Ik.filter(p=>p.actual[i]!=null&&p.budget[i]!=null).map(p=>({p,a:p.actual[i],b:p.budget[i]}));
+    const overs=pairs.filter(x=>x.a>x.b);
+    const diffs=overs.map(x=>x.a-x.b);
+    return {t,i,n:vals.length,avail,lo:Math.min(...vals),hi:Math.max(...vals),md:med(vals),of:pairs.length,over:overs.length,dlo:diffs.length?Math.min(...diffs):0,dhi:diffs.length?Math.max(...diffs):0,
+      flagged:pairs.length>=2&&overs.length/pairs.length>=0.5};
+  });
+  return {I,n,state,totals,tlo:n?Math.min(...totals):0,thi:n?Math.max(...totals):0,tmd:n?med(totals):0,per};
+}
+function canFill(st){return st.state==='strong'||(st.state==='thin'&&S.thinFlag)}
+function pick(x){return S.plan==='mid'?x.md:x.hi}
+function blended(st){const ps=st.per.filter(x=>x.n);const h=sum(ps.map(x=>x.md));return h?sum(ps.map(x=>x.md*x.t.rate))/h:130}
+function rateOf(id){return TASKS.find(t=>t.id===id).rate}
+
+// recalc: fills only values the lead has not touched. Typed values are never overwritten.
+function recalc(){
+  const st=stats(),fill=canFill(st);
+  let kept=0;
+  S.rows.forEach(r=>{
+    if(r.status==='entered'){kept++;return}
+    const x=st.per[TASKS.findIndex(t=>t.id===r.id)];
+    if(fill&&x.n){r.h=pick(x);r.status='filled'}
+    else{r.h=null;r.status='empty'}
+  });
+  const totalMode=S.btype==='th'||S.btype==='tf';
+  if(!totalMode){if(S.tot.status==='filled')S.tot={status:'empty',v:null}}
+  else if(S.tot.status==='entered'){kept++}
+  else if(fill){
+    const hrs=S.plan==='mid'?st.tmd:st.thi;
+    S.tot.v=(S.btype==='tf')?Math.round(sum(st.per.filter(x=>x.n).map(x=>pick(x)*x.t.rate))):hrs;
+    S.tot.status='filled';
+  }else{S.tot={status:'empty',v:null}}
+  return {kept};
+}
+function totalHours(){
+  if(S.btype==='hpt'||S.btype==='fpt'){const r=S.rows.filter(r=>r.h!=null);return r.length?sum(r.map(r=>r.h)):null}
+  if(S.btype==='th')return S.tot.v;
+  if(S.btype==='tf'&&S.tot.v!=null)return Math.round(S.tot.v/blended(stats()));
+  return null;
+}
+
+/* ============ HELPERS ============ */
+const $=s=>document.querySelector(s);
+const money=v=>'$'+Math.round(v).toLocaleString('en-US');
+// index.html sparkle, 18 viewBox, drawn at size s
+const SPARK=s=>`<svg class="spark" width="${s}" height="${s}" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path fill="currentColor" d="M6.96 2.39c.29-.78 1.4-.78 1.68 0a10.8 10.8 0 0 0 6.37 6.37c.78.29.78 1.4 0 1.68a10.8 10.8 0 0 0-6.37 6.37c-.29.78-1.4.78-1.68 0a10.8 10.8 0 0 0-6.37-6.37c-.78-.29-.78-1.4 0-1.68a10.8 10.8 0 0 0 6.37-6.37Z"/><path fill="currentColor" d="M15 0c-.09 0-.18.04-.22.15l-.1.28a3.9 3.9 0 0 1-2.24 2.25l-.28.1c-.21.08-.21.36 0 .44l.28.1a3.9 3.9 0 0 1 2.24 2.25l.1.28c.09.2.36.2.45 0l.1-.28a3.9 3.9 0 0 1 2.24-2.25l.28-.1c.21-.08.21-.36 0-.44l-.28-.1a3.9 3.9 0 0 1-2.24-2.25l-.1-.28C15.18.04 15.09 0 15 0Z"/></svg>`;
+const warnSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>';
+const extSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+// Porchlight icon-x, inlined exactly from assets/icon-x.svg and assets/icon-x-disabled.svg
+const ICON_X='<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">\n<g id="icon-x">\n<path id="Line" d="M12 4L4 12" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" stroke="#616261"/>\n<path id="Line_2" d="M4 4L12 12" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" stroke="#616261"/>\n</g>\n</svg>';
+const ICON_X_OFF='<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">\n<g id="icon-x">\n<path id="Line" d="M12 4L4 12" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" stroke="#8D8E8D"/>\n<path id="Line_2" d="M4 4L12 12" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" stroke="#8D8E8D"/>\n</g>\n</svg>';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// "h" on screen, "hours" for screen readers. Takes safe HTML.
+const hh=s=>s.replace(/(\d[\d,]*(?: to \d[\d,]*)?) h\b/g,(m,n)=>`<span aria-hidden="true">${m}</span><span class="sr">${n} ${n==='1'?'hour':'hours'}</span>`);
+const spoken=t=>t.replace(/(\d) h\b/g,'$1 hours');
+const plural=(n,one,many)=>`${n} ${n===1?one:many}`;
+// visible status line is for sighted users; every announcement goes through the hidden live region
+function say(t,busy){$('#live').innerHTML=t||busy?(busy?'<span class="spin" aria-hidden="true"></span>':'')+'<span>'+esc(t)+'</span>':''}
+function srsay(t){const e=$('#srlive');e.textContent='';setTimeout(()=>e.textContent=spoken(t),30)}
+function announce(t){say(t);srsay(t)}
+// AI-filled marker: sparkle by the field (index.html). aria-hidden: the field description carries the words.
+const aimark=on=>on?`<span class="aimark" title="${FILLED}" aria-hidden="true">${SPARK(12)}</span>`:'';
+const aimarkRow=on=>on?`<span class="aimark" title="${FILLED}" aria-hidden="true">${SPARK(14)}</span>`:'';
+const unitFor=()=>S.btype==='fpt'||S.btype==='tf'?'fee':'h';
+function disp(r){if(r.h==null)return '';return unitFor()==='fee'?Math.round(r.h*rateOf(r.id)):r.h}
+const nFilled=()=>((S.btype==='hpt'||S.btype==='fpt')?S.rows.filter(r=>r.status==='filled').length:0)+(S.tot.status==='filled'?1:0);
+const tally=()=>{const n=nFilled();return n?`${n} filled in`:''};
+
+/* ============ CUSTOM LISTBOX (select-only combobox, ARIA APG) ============ */
+let ddUid=0,openDd=null;
+function ddMount(host,cfg){
+  const uid='dd'+(++ddUid),lbId=uid+'-lb',opts=cfg.options;
+  let val=cfg.value==null?'':cfg.value,act=-1,buf='',bt;
+  const name=cfg.lby?`aria-labelledby="${cfg.lby}"`:`aria-label="${esc(cfg.label||'')}"`;
+  host.classList.add('dd');
+  host.innerHTML=`<button type="button" class="select ${cfg.cls||''}" id="${cfg.id||uid}" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="${lbId}" ${name} ${cfg.desc?`aria-describedby="${cfg.desc}"`:''} ${cfg.k?`data-k="${cfg.k}"`:''} data-dd-btn><span class="dd-t"></span></button><ul class="lb" id="${lbId}" role="listbox" tabindex="-1" hidden ${name}></ul>`;
+  const btn=host.firstElementChild,lb=btn.nextElementSibling,tx=btn.firstElementChild;
+  lb.innerHTML=opts.map((o,i)=>`<li role="option" id="${lbId}-${i}" data-i="${i}" ${o.disabled?'aria-disabled="true"':''}><span>${esc(o.l)}</span><span class="ck" aria-hidden="true">&#10003;</span></li>`).join('');
+  const li=i=>lb.children[i];
+  const paintBtn=()=>{const o=opts.find(o=>o.v===val);tx.textContent=o?o.l:(cfg.ph||'')};
+  function paint(){
+    [...lb.children].forEach((el,i)=>{el.setAttribute('aria-selected',String(opts[i].v===val));el.classList.toggle('act',i===act)});
+    if(act>=0){btn.setAttribute('aria-activedescendant',`${lbId}-${act}`);li(act).scrollIntoView({block:'nearest'})}
+  }
+  function place(){
+    const r=btn.getBoundingClientRect();
+    lb.style.minWidth=r.width+'px';lb.style.left=r.left+'px';lb.style.maxHeight='280px';
+    const h=lb.offsetHeight,below=innerHeight-r.bottom-12,above=r.top-12;
+    if(below<h&&above>below){lb.style.maxHeight=Math.min(280,above)+'px';lb.style.top=(r.top-4-lb.offsetHeight)+'px'}
+    else{lb.style.maxHeight=Math.min(280,below)+'px';lb.style.top=(r.bottom+4)+'px'}
+  }
+  function open(){
+    if(btn.getAttribute('aria-disabled')==='true'||!opts.length)return;
+    if(openDd)openDd.close();
+    lb.hidden=false;btn.setAttribute('aria-expanded','true');
+    act=opts.findIndex(o=>o.v===val);if(act<0||opts[act].disabled)act=opts.findIndex(o=>!o.disabled);
+    place();paint();openDd={close,lb};
+  }
+  function close(){lb.hidden=true;btn.setAttribute('aria-expanded','false');btn.removeAttribute('aria-activedescendant');if(openDd&&openDd.lb===lb)openDd=null}
+  function choose(i){
+    const o=opts[i];if(!o||o.disabled)return;
+    close();
+    if(o.v!==val){val=o.v;paintBtn();cfg.onChange&&cfg.onChange(o.v)}
+  }
+  function move(d){let i=act;do{i+=d}while(i>=0&&i<opts.length&&opts[i].disabled);if(i>=0&&i<opts.length){act=i;paint()}}
+  function edge(first){let i=first?0:opts.length-1;while(opts[i]&&opts[i].disabled)i+=first?1:-1;if(opts[i]){act=i;paint()}}
+  function type(ch){
+    clearTimeout(bt);buf+=ch.toLowerCase();bt=setTimeout(()=>buf='',600);
+    const from=buf.length===1?act+1:act;
+    const order=[...opts.keys()];const rot=[...order.slice(Math.max(from,0)),...order.slice(0,Math.max(from,0))];
+    const hit=rot.find(i=>!opts[i].disabled&&opts[i].l.toLowerCase().startsWith(buf));
+    if(hit!=null){act=hit;paint()}
+  }
+  btn.addEventListener('click',()=>{btn.focus();lb.hidden?open():close()});
+  btn.addEventListener('keyup',e=>{if(e.key===' ')e.preventDefault()});
+  btn.addEventListener('blur',()=>close());
+  btn.addEventListener('keydown',e=>{
+    const k=e.key,isOpen=!lb.hidden;
+    if(!isOpen){
+      if(k==='ArrowDown'||k==='ArrowUp'||k==='Enter'||k===' '){e.preventDefault();open()}
+      else if(k.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){open();type(k)}
+      return;
+    }
+    if(k==='ArrowDown'){e.preventDefault();if(e.altKey)return;move(1)}
+    else if(k==='ArrowUp'){e.preventDefault();if(e.altKey){choose(act);return}move(-1)}
+    else if(k==='Home'){e.preventDefault();edge(true)}
+    else if(k==='End'){e.preventDefault();edge(false)}
+    else if(k==='Enter'||(k===' '&&!buf)){e.preventDefault();choose(act)}
+    else if(k==='Escape'){e.preventDefault();e.stopPropagation();close()}
+    else if(k==='Tab'){if(act>=0&&!opts[act].disabled)choose(act);else close()}
+    else if(k.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();type(k)}
+  });
+  lb.addEventListener('mousedown',e=>e.preventDefault());
+  lb.addEventListener('mousemove',e=>{const o=e.target.closest('li');if(o&&!opts[+o.dataset.i].disabled&&act!==+o.dataset.i){act=+o.dataset.i;paint()}});
+  lb.addEventListener('click',e=>{const o=e.target.closest('li');if(o)choose(+o.dataset.i)});
+  paintBtn();paint();
+  return {btn};
+}
+document.addEventListener('pointerdown',e=>{if(openDd&&!e.target.closest('.dd'))openDd.close()});
+window.addEventListener('resize',()=>{if(openDd)openDd.close()});
+window.addEventListener('scroll',e=>{if(openDd&&!openDd.lb.contains(e.target))openDd.close()},true);
+// static dropdowns (Team, Invoices, Billing): options live in the markup
+function mountStatic(){
+  document.querySelectorAll('[data-dd]').forEach(h=>{
+    if(h.firstElementChild)return;
+    const items=h.dataset.dd.split('|').map(x=>({v:x,l:x}));
+    ddMount(h,{options:items,value:h.dataset.ph?'':items[0].v,ph:h.dataset.ph,id:h.dataset.id,lby:h.dataset.lby,label:h.dataset.label});
+  });
+}
+
+/* ============ RENDER ============ */
+function renderAll(){
+  const key=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.k;
+  renderTop();renderBilling();renderHeadline();renderTasks();renderSavebar();renderPanel();applyBusy();
+  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el&&!el.disabled&&el.getAttribute('aria-disabled')!=='true')el.focus()}
+}
+// ghost state while the AI works: controls are disabled, the region says it is busy
+function applyBusy(){
+  const busy=S.phase==='matching';
+  ['#scroll','#savebar'].forEach(s=>$(s).setAttribute('aria-busy',busy));
+  document.querySelectorAll('#scroll input,#scroll textarea,#scroll button:not([role=combobox]),#savebar button').forEach(el=>{
+    if(el.id==='desc')return;
+    if(busy){if(el.dataset.was===undefined)el.dataset.was=el.disabled?'1':'0';el.disabled=true}
+    else if(el.dataset.was!==undefined){el.disabled=el.dataset.was==='1';delete el.dataset.was}
+  });
+  document.querySelectorAll('#scroll [role=combobox]').forEach(el=>{
+    if(busy){if(openDd)openDd.close();el.setAttribute('aria-disabled','true');el.tabIndex=-1}
+    else{el.removeAttribute('aria-disabled');el.removeAttribute('tabindex')}
+  });
+  $('#desc').readOnly=busy;
+  $('#run').textContent=busy?'Estimating...':'Estimate';$('#run').setAttribute('aria-disabled',busy);
+  $('#fromPast').hidden=!(S.phase==='start'&&!$('#desc').value.trim());
+}
+function renderTop(){
+  ddMount($('#client-host'),{options:CLIENTS.map(c=>({v:c,l:c})),value:S.client,ph:'Select a client',id:'client',lby:'client-l',desc:'client-n',cls:S.aiClient?'ai-filled':'',k:'dd-client',
+    onChange:v=>{S.client=v;S.aiClient=false;renderAll()}});
+  $('#client-mark').innerHTML=aimark(S.aiClient);
+  $('#client-n').textContent=S.aiClient?FILLED+'.':'';
+  const pn=$('#pname');
+  if(pn!==document.activeElement||pn.value!==S.name)pn.value=S.name;
+  pn.classList.toggle('ai-filled',S.aiName);
+  $('#name-mark').innerHTML=aimark(S.aiName);
+  $('#name-n').textContent=S.aiName?FILLED+'.':'';
+  $('#banner').innerHTML=S.phase==='saved'?`<div class="banner ok" id="savedbanner" tabindex="-1"><p><b>Project saved.</b></p></div>`:'';
+}
+function renderBilling(){
+  const t=[['tm','Time & Materials','Bill by the hour, with billable rates'],['ff','Fixed Fee','Bill a set price, regardless of time tracked'],['nb','Non-Billable','Not billed to a client']];
+  $('#ptype').innerHTML=t.map(([v,l,d])=>`<label class="seg"><input type="radio" name="ptype" value="${v}" ${S.type===v?'checked':''} data-k="pt-${v}"><span><b>${esc(l)}</b><small>${d}</small></span></label>`).join('');
+  const keys=Object.keys(BTYPES).filter(k=>S.type==='nb'?['none','th','hpt'].includes(k):true);
+  ddMount($('#btype-host'),{options:keys.map(k=>({v:k,l:BTYPES[k]})),value:S.btype,id:'btype',lby:'btype-l',k:'dd-btype',onChange:setBudgetType});
+  const st=stats();
+  if(S.type==='ff'){
+    let ref='';
+    if(st.n){
+      const ps=st.per.filter(x=>x.n);
+      ref=`<div class="hint">For reference: ${money(sum(ps.map(x=>x.lo*x.t.rate)))} to ${money(sum(ps.map(x=>x.hi*x.t.rate)))} at current rates.</div>`;
+    }
+    const f=$('#fee');const had=f&&f===document.activeElement;
+    $('#ffnote').innerHTML=`<div class="inline" style="margin-top:10px"><label for="fee">Fee</label><input class="input" style="width:140px" id="fee" value="${esc(S.fee)}" placeholder="$" data-k="fee"></div>${ref}`;
+    if(had){const n=$('#fee');n.focus();n.setSelectionRange(n.value.length,n.value.length)}
+  }else $('#ffnote').innerHTML='';
+}
+const TAG={strong:'Consistent',conflicting:'Conflicting',thin:'Few matches',none:'No matches'};
+const TAGICON={strong:'&#10003;',conflicting:'&#8645;',thin:'&#8226;',none:'&#9675;'};
+function renderHeadline(){
+  const h=$('#headline-host');
+  if(S.phase==='start'){h.innerHTML='';return}
+  if(S.phase==='matching'){h.innerHTML='<div class="headline" aria-hidden="true"><span class="skel" style="width:90px"></span> <span class="skel" style="width:260px"></span><div style="margin-top:10px"><span class="skel" style="width:340px"></span></div></div>';return}
+  const st=stats(),n=st.n;
+  if(st.state==='none'){h.innerHTML='';return}   // nothing produced, so no banner
+  let txt='',sub='',acts='';
+  const refs=`<button class="btn sm" type="button" id="evbtn" data-k="evbtn" aria-expanded="${S.panel}" aria-controls="panel">${S.panel?'Hide references':'Show references'}</button>`;
+  const addLink='<button class="linkbtn" type="button" data-act="addfocus" data-k="addf">Add a past project</button>';
+  if(st.state==='strong'){txt=`Filled from ${n} past projects`;sub=hh(`They tracked ${st.tlo} to ${st.thi} h in total.`);acts=refs}
+  else if(st.state==='conflicting'){
+    txt=hh(`${n} past projects disagree: ${st.tlo} to ${st.thi} h`);sub='Nothing filled in. Pick the kind of work that fits.';
+    acts=groups(st).map(x=>`<button class="btn sm" type="button" data-act="group" data-kind="${x.kind}" data-k="g-${x.kind}">Use the ${x.items.length} ${x.label}</button>`).join('')+refs;
+  }else{
+    if(S.thinFlag){txt=`Filled from only ${plural(n,'past project','past projects')}`;sub='Check these numbers.'}
+    else{txt=`Only ${plural(n,'close match','close matches')}`;sub=`Nothing filled in. ${addLink}`}
+    acts=refs;
+  }
+  const head=st.state==='conflicting'?txt:esc(txt);
+  h.innerHTML=`<div class="headline ${st.state}" role="group" aria-label="References">
+    <div class="top"><span class="txt">${head}</span><span class="strength"><span aria-hidden="true">${TAGICON[st.state]}</span>${TAG[st.state]}</span></div>
+    <div class="sub2">${sub}</div>
+    <div class="acts">${acts}</div></div>`;
+}
+function groups(st){
+  const out=[];
+  [['build','full builds'],['refresh','refreshes']].forEach(([k,l])=>{
+    const items=st.I.filter(p=>p.kind===k);
+    if(items.length&&items.length<st.I.length){
+      const t=items.map(p=>sum(p.actual.map(v=>v||0)));
+      out.push({kind:k,label:l,items,lo:Math.min(...t),hi:Math.max(...t)});
+    }
+  });
+  return out;
+}
+function renderTasks(){
+  $('#tasks-host').innerHTML=manualTable();
+  const h=$('#addtask-host');
+  if(h){const left=TASKS.filter(t=>!S.rows.find(r=>r.id===t.id));
+    ddMount(h,{options:left.map(t=>({v:t.id,l:t.name})),value:'',ph:'Choose a task',id:'addtask',lby:'addtask-l',k:'dd-addtask',
+      onChange:v=>{S.rows.push({id:v,status:'empty',h:null});S.rows.sort((a,b)=>TASKS.findIndex(x=>x.id===a.id)-TASKS.findIndex(x=>x.id===b.id));renderAll();say(`Added ${TASKS.find(x=>x.id===v).name}.`)}})}
+}
+function manualTable(){
+  const st=stats();
+  const busy=S.phase==='matching';
+  const est=S.usedAI&&!busy;
+  const fees=unitFor()==='fee';
+  const totalMode=S.btype==='th'||S.btype==='tf';
+  const noBudget=S.btype==='none';
+  const nf=nFilled();
+  let head='';
+  if(est&&(nf||canFill(st))){
+    head=`<div class="t-head"><div class="grow" id="tally">${tally()}</div>
+      ${canFill(st)&&!noBudget?`<div class="inline" role="group" aria-label="Fill from"><span class="muted" aria-hidden="true">Fill from:</span>
+        <label class="seg" style="padding:3px 10px"><input type="radio" name="plan" value="mid" ${S.plan==='mid'?'checked':''} data-k="plan-mid"> Middle<span class="sr"> of range</span></label>
+        <label class="seg" style="padding:3px 10px"><input type="radio" name="plan" value="hi" ${S.plan==='hi'?'checked':''} data-k="plan-hi"> Top<span class="sr"> of range</span></label></div>`:''}</div>`;
+  }
+  let rows='';
+  if(busy&&!S.rows.length){
+    rows=[200,160,230,140,190].map(w=>`<tr aria-hidden="true"><td><span class="skel" style="width:${w}px"></span></td><td><span class="skel" style="width:80px"></span></td><td><span class="skel" style="width:104px;height:34px"></span></td><td></td></tr>`).join('');
+  }else if(S.rows.length===0){
+    rows=`<tr><td colspan="5"><div class="empty-state"><p>${est&&st.state==='none'?'No matches. <button class="linkbtn" type="button" data-act="addfocus" data-k="addf">Start from a past project</button>, or add tasks by hand.':'No tasks yet.'}</p></div></td></tr>`;
+  }
+  S.rows.forEach(r=>{
+    const ti=TASKS.findIndex(t=>t.id===r.id),t=TASKS[ti],x=st.per[ti];
+    const rng=x.n&&est?(fees?`${money(x.lo*t.rate)} to ${money(x.hi*t.rate)}`:hh(`${x.lo} to ${x.hi} h`)):(est&&x.avail?'None used':'');
+    const rngSub=x.n&&est?(x.n<st.n?`${x.n} of ${st.n} projects`:`${st.n} projects`):'';
+    const over=x.n&&est&&x.flagged?`<div class="over">${warnSvg}<span aria-hidden="true">Over by ${x.dlo} to ${x.dhi} h in ${x.over} of ${x.of}</span><span class="sr">Over budget by ${x.dlo} to ${x.dhi} hours in ${x.over} of ${x.of} past projects.</span></div>`:'';
+    const note=r.status==='filled'?`${FILLED}. Range ${x.lo} to ${x.hi} hours.`:r.status==='entered'?'Entered by you.':'No value yet.';
+    const isOpen=S.open.has(r.id);
+    const det=x.avail&&est?`<button class="tbtn" type="button" data-act="detail" data-id="${r.id}" data-k="d-${r.id}" aria-expanded="${isOpen}">${isOpen?'Hide details':'Details'}<span class="sr"> for ${esc(t.name)}</span></button>`:'';
+    let bud='';
+    if(noBudget)bud=`<div class="bud"><span class="muted">No budget</span>${det}</div>`;
+    else if(totalMode)bud=`<div class="bud"><span class="muted">In the total</span>${det}</div>`;
+    else bud=`<div class="bud">${fees?'<span aria-hidden="true">$</span>':''}<input class="input ${r.status==='filled'?'ai-filled':''}" inputmode="numeric" data-row="${r.id}" data-k="in-${r.id}" aria-label="${fees?'Budget fees':'Budget hours'}, ${esc(t.name)}" aria-describedby="n-${r.id}" value="${disp(r)}" placeholder="${fees?'':'Hours'}">${fees?'':'<span aria-hidden="true">h</span>'}<span data-chip="${r.id}">${aimarkRow(r.status==='filled')}</span><span class="sr" id="n-${r.id}">${note}</span>${det}</div>`;
+    rows+=`<tr data-r="${r.id}"><td class="task"><b>${esc(t.name)}</b>${over}</td>
+      <td class="rng">${rng}${rngSub?`<small>${rngSub}</small>`:''}</td>
+      ${fees?`<td class="num">${money(t.rate)}/h</td>`:''}
+      <td>${bud}</td>
+      <td class="act"><div class="row-actions"><button class="tbtn" type="button" data-act="rm" data-id="${r.id}" data-k="rm-${r.id}" aria-label="Remove ${esc(t.name)}">Remove</button></div></td></tr>`;
+    if(isOpen&&x.avail){
+      const ex=S.excl[r.id]||new Set();
+      const heading=`References for ${esc(t.name)}`;
+      const lis=st.I.filter(p=>p.actual[ti]!=null).map(p=>{
+        const a=p.actual[ti],b=p.budget[ti],off=ex.has(p.id),nm=`${p.client}: ${p.name}`;
+        const isOver=b!=null&&a>b;
+        const ov=isOver?`<span class="ob">${hh(`over by ${a-b} h`)}</span>`:'';
+        const lbl=`${off?'Add back':'Remove'} ${nm} ${off?'to':'from'} ${t.name}`;
+        const btn=`data-act="tex" data-id="${r.id}" data-pid="${p.id}" data-k="ex-${r.id}-${p.id}" aria-label="${esc(lbl)}"`;
+        if(refMode==='tags')return `<li><span class="tag ${off?'off':isOver?'err':''}"><span class="tl"><span class="rn">${esc(nm)}</span>${off?'<span class="sr">, left out</span>':''}<span class="rh">, ${hh(a+' h')}</span>${ov?', '+ov:''}</span><button class="tx ${off?'add':''}" type="button" ${btn}>${off?ICON_X_OFF:ICON_X}</button></span></li>`;
+        return `<li class="${off?'off':''}"><span><span class="rn">${esc(nm)}</span>. ${hh(a+' h')}${b!=null?`, budget ${hh(b+' h')}`:''}${ov?', '+ov:''}.${off?' Left out.':''}</span><button class="tbtn" type="button" ${btn}>${off?'Add back':'Remove'}</button></li>`}).join('');
+      rows+=`<tr class="detail"><td colspan="${fees?5:4}"><h3>${heading}</h3><div role="group" aria-label="References for ${esc(t.name)}"><ul class="${refMode==='tags'?'rchips':'dl'}">${lis}</ul></div></td></tr>`;
+    }
+  });
+  const addrow=`<div class="add-task"><label class="muted" id="addtask-l" for="addtask">Add a task</label><div id="addtask-host" style="width:260px"></div></div>`;
+  let foot='';
+  if(S.rows.length||totalMode){
+    if(totalMode){
+      const x=S.tot,u=S.btype==='tf';
+      const tn=x.status==='filled'?`${FILLED}. Range ${st.tlo} to ${st.thi} hours.`:x.status==='entered'?'Entered by you.':'No value yet.';
+      foot=`<tfoot><tr><td><b style="font-weight:500">Total ${u?'fees':'hours'}</b>${est&&st.n?`<div class="muted" style="font-weight:400;font-size:13px">Past projects: ${hh(`${st.tlo} to ${st.thi} h`)}</div>`:''}</td><td></td><td><div class="bud">${u?'<span aria-hidden="true">$</span>':''}<input class="input ${x.status==='filled'?'ai-filled':''}" inputmode="numeric" data-tot="1" data-k="in-tot" aria-label="Total ${u?'fees':'hours'}" aria-describedby="n-tot" value="${x.v==null?'':x.v}">${u?'':'<span aria-hidden="true">h</span>'}<span data-chip="tot">${aimarkRow(x.status==='filled')}</span><span class="sr" id="n-tot">${tn}</span></div></td><td></td></tr></tfoot>`;
+    }else if(!noBudget){
+      const th=totalHours();
+      const val=fees?(S.rows.some(r=>r.h!=null)?money(sum(S.rows.filter(r=>r.h!=null).map(r=>r.h*rateOf(r.id)))):'-'):(th==null?'-':th+' h');
+      foot=`<tfoot><tr><td>Total</td><td class="rng">${est&&st.n?`<span style="font-weight:400">Past projects: ${hh(`${st.tlo} to ${st.thi} h`)}</span>`:''}</td>${fees?'<td></td>':''}<td id="totalcell">${val}</td><td></td></tr></tfoot>`;
+    }
+  }
+  const cols=`<thead><tr><th scope="col">Task</th><th scope="col">Tracked</th>${fees?'<th scope="col" class="num">Rate</th>':''}<th scope="col">Budget</th><th scope="col"><span class="sr">Actions</span></th></tr></thead>`;
+  return `${head}<div class="t-card"><table><caption class="sr">Tasks, tracked range from past projects, and budget</caption>${cols}<tbody>${rows}</tbody>${foot}</table>${addrow}</div>`;
+}
+function renderSavebar(){
+  const b=$('#savebar');
+  if(S.phase==='saved'){b.hidden=true;b.innerHTML='';return}
+  b.hidden=false;
+  b.innerHTML=`<button class="btn primary lg" type="button" data-act="save" data-k="save">Save project</button><button class="btn lg" type="button" data-act="reset" data-k="cancel">Cancel</button>`;
+}
+function renderPanel(){
+  const p=$('#panel');
+  if(!S.panel||S.phase==='start'||S.phase==='matching'){p.hidden=true;p.innerHTML='';return}
+  p.hidden=false;
+  const st=stats(),C=cands();
+  const rest=POOL.filter(x=>!C.find(c=>c.id===x.id));
+  const g=st.state==='conflicting'?groups(st):[];
+  p.innerHTML=`<div class="p-head"><h2 id="ptitle" tabindex="-1" data-k="ptitle">References</h2><button class="p-x" type="button" data-act="closepanel" aria-label="Close references" data-k="px">&times;</button></div>
+  <div class="p-body">
+   ${g.length?`<section aria-label="Kinds of work">${g.map(x=>`<div class="group-card"><span><b>${x.items.length} ${x.label}</b><br>${hh(`${x.lo} to ${x.hi} h`)}</span><button class="btn sm" type="button" data-act="group" data-kind="${x.kind}" data-k="pg-${x.kind}">Use these</button></div>`).join('')}</section>`:''}
+   ${C.length?`<ul aria-label="References">${C.map(c=>{const on=S.used.has(c.id),t=sum(c.actual.map(v=>v||0)),shared=c.actual.filter(v=>v!=null).length;
+      const nm=`${c.client}: ${c.name}`;
+      return `<li class="comp ${on?'on':'off'}"><label><input type="checkbox" data-act="toggle" data-id="${c.id}" data-k="c-${c.id}" ${on?'checked':''}><span>${esc(nm)}${on?'':'<span class="lo">Left out</span>'}</span></label>
+      <a class="ext" href="#" target="_blank" rel="noopener" title="Open ${esc(nm)} in a new window" aria-label="Open ${esc(nm)} in a new window" onclick="return false">${extSvg}</a>
+      <div class="m">${esc(KIND[c.kind])} &middot; ${c.year} &middot; ${hh(t+' h')} &middot; ${shared} of 7 tasks${c.client===SCEN[S.scen].client?' &middot; same client':''}</div></li>`}).join('')}</ul>`:''}
+   <div><label class="lab" id="addp-l" for="addp">Add a past project</label><div id="addp-host"></div></div>
+   <p class="method">Hours come from tracked time.</p>
+  </div>`;
+  ddMount($('#addp-host'),{options:rest.map(x=>({v:x.id,l:`${x.client}: ${x.name}`})),value:'',ph:'Choose a project',id:'addp',lby:'addp-l',k:'dd-addp',onChange:addPast});
+}
+
+/* ============ ACTIONS ============ */
+let timers=[];
+function run(){
+  const input=$('#desc');
+  const sc=SCEN[S.scen];
+  let d=input.value.trim();
+  if(!d){d=sc.desc;input.value=d}
+  timers.forEach(clearTimeout);timers=[];
+  S.desc=d;S.phase='matching';S.usedAI=true;
+  if(!S.client){S.client=sc.client;S.aiClient=true}
+  if(!S.name){S.name=sc.name;S.aiName=true}
+  S.used=new Set(sc.matched);S.added=[];S.excl={};
+  const line=`Understood: new ${S.name.toLowerCase()} for ${S.client}. Looking at ${TOTAL_PROJECTS} projects...`;
+  say(line,true);srsay(line);
+  renderAll();
+  timers.push(setTimeout(()=>{say('Reading tracked time...',true)},900));
+  timers.push(setTimeout(()=>{
+    S.phase='ready';
+    const st=stats();
+    const keep=S.rows.filter(r=>r.status==='entered').map(r=>r.id);
+    S.rows=TASKS.filter(t=>keep.includes(t.id)||st.per[TASKS.indexOf(t)].n).map(t=>S.rows.find(r=>r.id===t.id)||{id:t.id,status:'empty',h:null});
+    recalc();
+    say('');
+    srsay({strong:`Estimate ready. ${st.n} past projects, ${st.tlo} to ${st.thi} hours.`,
+      conflicting:`Estimate ready. ${st.n} past projects disagree, ${st.tlo} to ${st.thi} hours. Nothing filled in.`,
+      thin:S.thinFlag?`Estimate ready. Only ${plural(st.n,'close match','close matches')}. Check the filled numbers.`:`Estimate ready. Only ${plural(st.n,'close match','close matches')}. Nothing filled in.`,
+      none:'No matches. Nothing filled in.'}[st.state]);
+    renderAll();
+    // focus returns to Describe; the page does not scroll and does not move to the table
+    const a=document.activeElement;
+    if(!a||a===document.body||$('#scroll').contains(a))$('#desc').focus({preventScroll:true});
+  },1900));
+}
+// change the estimate base, then say what happened in one short sentence
+function mutate(reason,fn,opts){
+  opts=opts||{};
+  const pre=stats().state,before=totalHours();
+  fn();
+  const r=recalc(),st=stats(),after=totalHours(),n=st.n;
+  let m=reason+'.';
+  if(opts.short){/* reason only */}
+  else if(st.state!==pre){
+    if(st.state==='thin')m+=` Now only ${plural(n,'close match','close matches')}. `+(S.thinFlag?'Check these numbers.':'Nothing filled in.');
+    else if(st.state==='none')m+=' No matches. Nothing filled in.';
+    else if(st.state==='conflicting')m+=` Now ${n} past projects disagree. Nothing filled in.`;
+    else m+=` Filled from ${n} past projects.`;
+  }else{
+    m+=` ${plural(n,'project','projects')}.`;
+    if(canFill(st)&&before!=null&&after!=null&&before!==after)m+=` Total now ${after} h, was ${before} h.`;
+  }
+  if(r.kept)m+=' Your values kept.';
+  announce(m);renderAll();
+}
+function addPast(id){
+  const p=P(id);
+  mutate(`Added ${p.client}: ${p.name}`,()=>{
+    S.added.push(id);S.used.add(id);
+    const st=stats();
+    TASKS.forEach((tk,i)=>{if(st.per[i].n&&!S.rows.find(r=>r.id===tk.id))S.rows.push({id:tk.id,status:'empty',h:null})});
+    S.rows.sort((a,b)=>TASKS.findIndex(x=>x.id===a.id)-TASKS.findIndex(x=>x.id===b.id));
+  });
+}
+function setBudgetType(nu){
+  const st=stats(),old=S.btype;
+  const wasFee=old==='tf'||old==='fpt',isFee=nu==='tf'||nu==='fpt';
+  if(S.tot.status==='entered'&&S.tot.v!=null&&wasFee!==isFee){const b=blended(st);S.tot.v=isFee?Math.round(S.tot.v*b):Math.round(S.tot.v/b)}
+  else if(S.tot.status!=='entered'){S.tot={status:'empty',v:null}}
+  mutate('Budget type: '+BTYPES[nu].toLowerCase(),()=>{S.btype=nu},{short:true});
+}
+let thinFlag=false;let refMode='tags';
+function setState(k){
+  S=fresh(k);S.thinFlag=thinFlag;
+  $('#desc').value='';
+  syncSketch();renderAll();say('');
+  run();
+}
+function syncSketch(){
+  document.querySelectorAll('#stateBtns button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S.scen));
+  document.querySelectorAll('#thinOpt button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.thin===+thinFlag)));
+  $('#thinOpt').hidden=S.scen!=='thin';
+}
+function save(){
+  if(S.phase==='matching')return;
+  S.phase='saved';S.panel=false;
+  say('');srsay('Project saved.');
+  renderAll();const b=$('#savedbanner');b&&b.focus();
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act],#evbtn,#fromPast');
+  if(!el)return;
+  const a=el.dataset.act,id=el.dataset.id;
+  if(el.id==='evbtn'){S.panel=!S.panel;renderAll();if(S.panel)$('#ptitle').focus();return}
+  if(el.id==='fromPast'){S.usedAI=true;const sc=SCEN[S.scen];if(!S.client){S.client=sc.client;S.aiClient=true}if(!S.name){S.name=sc.name;S.aiName=true}S.used=new Set();S.phase='ready';S.rows=[];S.panel=true;renderAll();const s=$('#addp');s&&s.focus();return}
+  if(a==='detail'){S.open.has(id)?S.open.delete(id):S.open.add(id);renderAll()}
+  else if(a==='rm'){S.rows=S.rows.filter(r=>r.id!==id);renderAll();say(`Removed ${TASKS.find(t=>t.id===id).name}.`)}
+  else if(a==='closepanel'){S.panel=false;renderAll();$('#evbtn')&&$('#evbtn').focus()}
+  else if(a==='group'){
+    const kind=el.dataset.kind,n=stats().I.filter(p=>p.kind===kind).length;
+    mutate(`Using the ${n} ${kind==='build'?'full builds':'refreshes'}`,()=>{S.used=new Set(stats().I.filter(p=>p.kind===kind).map(p=>p.id))});
+  }
+  else if(a==='tex'){
+    const pid=el.dataset.pid,p=P(pid),tn=TASKS.find(t=>t.id===id).name;
+    const set=S.excl[id]||(S.excl[id]=new Set());
+    const was=set.has(pid);was?set.delete(pid):set.add(pid);
+    const r=recalc();
+    const x=stats().per[TASKS.findIndex(t=>t.id===id)];
+    const row=S.rows.find(q=>q.id===id);
+    const typed=row&&row.status==='entered';
+    let m=`${was?'Added back':'Removed'} ${p.client}: ${p.name} ${was?'to':'from'} ${tn}. `+(x.n?`Range ${x.lo} to ${x.hi} h.`:'No range left. Nothing filled in.');
+    if(typed)m+=' Your value kept.';
+    announce(m);renderAll();
+  }
+  else if(a==='addfocus'){S.panel=true;renderAll();const s=$('#addp');s&&s.focus()}
+  else if(a==='save'){save()}
+  else if(a==='reset'){S=fresh(S.scen);$('#desc').value='';say('');renderAll();$('#desc').focus()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.act==='toggle'){
+    const id=t.dataset.id,p=P(id);
+    mutate(`${t.checked?'Added':'Left out'} ${p.client}: ${p.name}`,()=>{t.checked?S.used.add(id):S.used.delete(id)});
+  }else if(t.name==='ptype'){S.type=t.value;if(S.type==='nb'&&(S.btype==='tf'||S.btype==='fpt'))S.btype='hpt';renderAll()}
+  else if(t.name==='plan'){
+    mutate(`Now filled from the ${t.value==='mid'?'middle':'top'} of each range`,()=>{S.plan=t.value},{short:true});
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.row){
+    const r=S.rows.find(x=>x.id===t.dataset.row),v=t.value.replace(/[^0-9.]/g,'');
+    r.status=v===''?'empty':'entered';
+    r.h=v===''?null:(unitFor()==='fee'?Math.round(+v/rateOf(r.id)):+v);
+    t.classList.remove('ai-filled');
+    const c=document.querySelector(`[data-chip="${r.id}"]`);if(c)c.innerHTML='';
+    const n=document.getElementById('n-'+r.id);if(n)n.textContent=r.status==='entered'?'Entered by you.':'No value yet.';
+    const tc=$('#totalcell');if(tc){const fees=unitFor()==='fee';const th=totalHours();tc.textContent=fees?(S.rows.some(q=>q.h!=null)?money(sum(S.rows.filter(q=>q.h!=null).map(q=>q.h*rateOf(q.id)))):'-'):(th==null?'-':th+' h')}
+    const tl=$('#tally');if(tl)tl.textContent=tally();
+  }else if(t.dataset.tot){
+    const v=t.value.replace(/[^0-9.]/g,'');S.tot={status:v===''?'empty':'entered',v:v===''?null:+v};t.classList.remove('ai-filled');
+    $('[data-chip="tot"]').innerHTML='';$('#n-tot').textContent=S.tot.status==='entered'?'Entered by you.':'No value yet.';
+    const tl=$('#tally');if(tl)tl.textContent=tally();
+  }else if(t.id==='pname'){
+    S.name=t.value;S.aiName=false;t.classList.remove('ai-filled');$('#name-mark').innerHTML='';$('#name-n').textContent='';
+  }
+  else if(t.id==='fee'){S.fee=t.value}
+  else if(t.id==='desc'){$('#fromPast').hidden=!(S.phase==='start'&&!t.value.trim())}
+});
+$('#aiform').addEventListener('submit',e=>{e.preventDefault();if(S.phase!=='matching')run()});
+document.addEventListener('keydown',e=>{
+  const ae=document.activeElement||{};
+  const typing=/INPUT|SELECT|TEXTAREA/.test(ae.tagName)||ae.getAttribute&&ae.getAttribute('role')==='combobox';
+  if(e.key==='/'&&!typing){e.preventDefault();$('#desc').focus()}
+  else if((e.key==='r'||e.key==='R')&&!typing&&!e.metaKey&&!e.ctrlKey){const b=$('#evbtn');if(b){e.preventDefault();b.click()}}
+  else if(e.key==='Escape'&&S.panel&&!openDd){S.panel=false;renderAll();const b=$('#evbtn');b&&b.focus()}
+  else if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();if(S.phase==='ready'||S.phase==='start')save()}
+});
+document.querySelectorAll('#refOpt button').forEach(b=>b.onclick=()=>{refMode=b.dataset.ref;document.querySelectorAll('#refOpt button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.ref===refMode));renderAll()});
+// sketch controls
+Object.entries(SCEN).forEach(([k,v])=>{const b=document.createElement('button');b.type='button';b.dataset.s=k;b.textContent=v.label;b.setAttribute('aria-pressed',k===S.scen);b.onclick=()=>setState(k);$('#stateBtns').appendChild(b)});
+document.querySelectorAll('#thinOpt button').forEach(b=>b.onclick=()=>{thinFlag=!!+b.dataset.thin;S.thinFlag=thinFlag;syncSketch();setState('thin')});
+$('#reset').onclick=()=>{S=fresh('strong');S.thinFlag=thinFlag;$('#desc').value='';syncSketch();say('');renderAll();$('#desc').focus()};
+mountStatic();
+renderAll();syncSketch();$('#desc').focus();
+</script>
+</body>
+</html>

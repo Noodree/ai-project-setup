@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tentative project</title>
+<!--
+  HARVEST: TENTATIVE PROJECT WITH HARVEST AI
+  A clickable prototype to vibe-code on. One file, no build step. Open it in a browser.
+
+  Where to change things:
+  1. TOKENS      top of <style>. Values copied from Harvest's live Porchlight CSS.
+  2. SAMPLE      the SAMPLE object in <script>: prompt, people, tasks, past projects.
+  3. COPY        each screen is a function in SCREENS. All its text lives there.
+  4. AI BEHAVIOUR draftFromPrompt() reads the prompt with a few simple rules. It's a stand-in for the model.
+  5. MARKED FIELDS field() and the .ai-filled class decide how AI-filled fields look.
+
+  Screen links: index.html?screen=1 to 6. The switcher sits at the bottom centre.
+  Font: uses Muoto if it's installed on your Mac, otherwise the system font.
+-->
+<style>
+:root{
+  /* Porchlight tokens, values from Harvest's live stylesheet */
+  --gray-100:#eee;--gray-150:#ddd;--gray-200:#c6c6c6;--gray-300:#bbb;--gray-400:#a5a5a4;--gray-500:#8d8e8d;--gray-600:#737472;--gray-700:#616261;--gray-800:#4a4b49;--gray-900:#343533;
+  --orange-100:#ffe7d9;--orange-200:#ffc5a3;--orange-300:#ffa26c;--orange-400:#ff8036;--orange-500:#fa5d00;--orange-600:#df4b00;--orange-700:#bf3b00;
+  --green-100:#daefdc;--green-500:#188433;--green-600:#11742a;--green-700:#0b6221;
+  --blue-100:#deedfd;--blue-500:#376bdd;--blue-600:#2a59c1;
+  --red-100:#fde2dd;--red-500:#d92f2f;--red-600:#be2923;
+  --yellow-100:#fff1cd;--yellow-700:#b3730f;
+  --text:#1d1e1c;--text-muted:rgba(29,30,28,.7);--text-subtle:rgba(29,30,28,.5);--text-placeholder:rgba(29,30,28,.62);
+  --border:rgba(29,30,28,.3);--border-secondary:#ddd;--control-border:rgba(29,30,28,.25);
+  --surface:#fff;--surface-muted:rgba(29,30,28,.07);--nav-bg:#fff2eb;--upsell-bg:#fff8f1;
+  --cta:var(--green-500);--cta-hover:var(--green-600);--cta-disabled:#76bc82;
+  --radius-md:8px;--radius-lg:12px;--radius-xl:16px;
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;
+  --shadow-panel:0 1px 2px rgba(52,53,51,.08),0 12px 32px rgba(52,53,51,.16);
+  --shadow-chip:0 2px 8px rgba(52,53,51,.1),0 10px 28px rgba(52,53,51,.14);
+  --font:"Muoto VAR",Muoto,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  /* Prototype sizes */
+  --nav-w:72px;--panel-w:440px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:400 15px/1.4 var(--font);color:var(--text);background:var(--surface);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+a{color:var(--blue-600)}
+:focus-visible{outline:2px solid var(--orange-500);outline-offset:1px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* App frame */
+.app{display:flex;height:100vh;overflow:hidden}
+.nav{width:var(--nav-w);flex:none;padding:8px;display:flex}
+.nav-in{flex:1;background:var(--nav-bg);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;padding:10px 0 12px;gap:2px}
+.nav-logo{height:36px;display:grid;place-items:center;margin-bottom:6px}
+.nav-timer{width:40px;height:40px;border-radius:50%;background:var(--orange-500);color:#fff;display:grid;place-items:center;border:0;margin-bottom:6px}
+.nav-more{width:34px;height:32px;border-radius:32px;background:#fff;border:1px solid rgba(29,30,28,.07);margin-bottom:12px;display:grid;place-items:center;font-weight:600;letter-spacing:1px;font-size:12px}
+.nav-item{width:46px;height:26px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text);margin-bottom:2px}
+.nav-item svg{width:16px;height:16px}
+.nav-item.on{background:var(--orange-100)}
+.nav-avatar{margin-top:auto;width:36px;height:36px;border-radius:50%;background:var(--orange-200);display:grid;place-items:center;font-size:13px;font-weight:600}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.scroll{flex:1;overflow:auto;padding:0 24px}
+.wrap{max-width:1320px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:8px;height:64px;border-bottom:1px solid var(--gray-100);font-weight:500;font-size:18px}
+.topbar .back{font-size:15px;display:flex;align-items:center;gap:6px;background:none;border:0;padding:0;cursor:pointer}
+h1{font-size:32px;line-height:40px;font-weight:500}
+
+/* Buttons */
+.btn{height:34px;padding:0 16px;border-radius:var(--radius-md);border:1px solid var(--control-border);background:#fff;font-weight:500;color:var(--gray-900);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:#f6f6f6}
+.btn.primary{background:var(--cta);border-color:transparent;color:#fff}
+.btn.primary:hover{background:var(--cta-hover)}
+.btn.primary[disabled]{background:var(--cta-disabled);cursor:not-allowed}
+.btn.lg{height:42px;padding:0 20px;font-size:16px}
+.btn.sm{height:28px;padding:0 10px;font-size:13px}
+
+/* Porchlight Badge */
+.badge{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid transparent;white-space:nowrap}
+.badge.tentative{background:var(--orange-100);color:var(--orange-600)}
+.badge.neutral{background:#fff;border-color:var(--gray-200);color:var(--gray-800)}
+.badge.green{background:var(--green-100);color:var(--green-600)}
+
+/* Harvest AI bar: same pattern as the live /projects bar */
+.ai-bar{max-width:720px;margin:0 0 24px}
+.ai-bar label{display:block;font-size:13px;font-weight:500;color:var(--gray-600);margin-bottom:4px}
+.ai-row{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 6px 4px 14px;border:1px solid var(--gray-200);border-radius:999px;background:#fff}
+.ai-row:focus-within{border-color:var(--orange-400);box-shadow:0 0 0 3px var(--orange-100)}
+.ai-row input{flex:1;border:0;outline:0;min-width:0;background:none}
+.ai-row input::placeholder{color:var(--text-placeholder)}
+.spark{color:var(--orange-500);flex:none}
+.send{width:30px;height:30px;border-radius:50%;border:0;background:var(--orange-500);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.send[disabled]{background:var(--gray-200);cursor:not-allowed}
+
+/* New project form */
+.title-row{display:flex;align-items:center;gap:12px;padding:24px 0}
+.form-row{display:grid;grid-template-columns:var(--label-w,200px) 1fr;gap:16px;padding:12px 0;align-items:start}
+.form-row>.lbl{font-weight:500;padding-top:6px;display:flex;align-items:center;gap:6px}
+.lbl .spark{width:12px;height:12px}
+.hint{font-size:13px;color:var(--text-muted);margin-top:6px;line-height:18px}
+.input,.select,.textarea{height:34px;width:100%;border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:0 10px}
+.textarea{height:72px;padding:8px 10px;resize:vertical}
+.select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='m2 4 4 4 4-4' stroke='%23616261' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.ai-filled{background-color:var(--upsell-bg);border-color:var(--orange-300)}
+.date{height:51px;width:150px;border:1px solid var(--border);border-radius:var(--radius-md);padding:6px 10px;background:#fff;display:flex;flex-direction:column;justify-content:center}
+.date small{font-size:12px;color:var(--text-muted)}
+.date input{border:0;outline:0;background:none;padding:0;width:100%}
+.date.ai-filled{background:var(--upsell-bg)}
+.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:8px;min-height:22px}
+.check input{width:18px;height:18px;margin:0;accent-color:var(--orange-500)}
+.divider{border:0;border-top:1px solid var(--gray-100);margin:12px 0}
+.status-opts,.types{display:grid;gap:8px}
+.status-opts{grid-template-columns:1fr 1fr}
+.types{grid-template-columns:repeat(3,1fr)}
+.seg{border:1px solid var(--border);border-radius:var(--radius-md);background:#fff;padding:9px 12px;text-align:center;cursor:pointer}
+.seg b{display:block;font-weight:500}
+.seg span{font-size:13px;color:var(--text-muted)}
+.seg.on{background:var(--orange-100);border-color:var(--orange-400)}
+.sub-card{margin-top:12px;background:var(--upsell-bg);border:1px solid var(--orange-200);border-radius:var(--radius-md);padding:14px 16px}
+.sub-card h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.money{display:flex;align-items:center;gap:6px}
+.money input{width:120px}
+table{width:100%;border-collapse:collapse}
+th{font-size:13px;font-weight:500;color:var(--text-muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--gray-150)}
+td{padding:11px 12px;border-bottom:1px solid var(--gray-100)}
+th.num,td.num{text-align:right}
+.t-card{border:1px solid var(--gray-150);border-radius:var(--radius-md);overflow:hidden;background:#fff}
+.t-card tr:last-child td{border-bottom:0}
+.savebar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 24px;border-top:1px solid var(--gray-100);background:#fff}
+.savebar .note{font-size:13px;color:var(--text-muted);margin-left:8px;white-space:nowrap}
+.skeleton .input,.skeleton .select,.skeleton .textarea,.skeleton .date{background:linear-gradient(90deg,var(--gray-100),#fafafa,var(--gray-100));background-size:200% 100%;animation:shimmer 1.4s linear infinite;border-color:var(--gray-150);color:transparent}
+.skeleton .date *{visibility:hidden}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* Harvest AI panel */
+.panel{width:var(--panel-w);flex:none;margin:14px 14px 14px 0;border:1px solid var(--gray-200);border-radius:var(--radius-xl);box-shadow:var(--shadow-panel);background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.p-head{display:flex;align-items:center;gap:8px;padding:12px 16px 8px;font-weight:500;font-size:14px}
+.p-new{margin-left:auto;background:var(--orange-500);color:#fff;border:0;border-radius:999px;height:26px;padding:0 12px;font-size:13px;font-weight:500}
+.p-x{width:26px;height:26px;border:0;background:none;color:var(--gray-600);font-size:18px;cursor:pointer}
+.p-sub{display:flex;gap:16px;padding:4px 16px 10px;font-size:13px;color:var(--gray-700);border-bottom:1px solid var(--gray-100)}
+.p-body{flex:1;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.bubble{align-self:flex-end;max-width:88%;background:var(--gray-100);padding:10px 12px;border-radius:12px 12px 2px 12px}
+.msg{line-height:21px}
+.steps{display:flex;flex-direction:column;gap:8px;padding:0;margin:0;list-style:none}
+.steps li{display:flex;gap:8px;align-items:center;color:var(--text-muted)}
+.steps li.done{color:var(--text)}
+.steps li.now{color:var(--text);font-weight:500}
+.tick{width:16px;height:16px;flex:none;display:grid;place-items:center;font-size:12px;color:var(--green-500)}
+.spin{width:12px;height:12px;border:2px solid var(--orange-200);border-top-color:var(--orange-500);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+.p-h{font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:2px 10px;border-radius:999px;background:var(--gray-100)}
+.why{display:flex;flex-direction:column;gap:10px}
+.why div b{font-weight:500;display:block}
+.why div span{font-size:13px;color:var(--text-muted);line-height:18px;display:block}
+.ask{border:1px solid var(--orange-300);background:var(--upsell-bg);border-radius:var(--radius-lg);padding:12px 14px}
+.ask p{margin-bottom:10px;line-height:20px}
+.ask.done{border-color:var(--gray-150);background:#fff;color:var(--text-muted)}
+.p-foot{padding:10px 16px 12px;border-top:1px solid var(--gray-100)}
+.usage{display:flex;justify-content:space-between;font-size:12px;color:var(--gray-700);margin-bottom:8px}
+.p-input{display:flex;align-items:center;gap:8px;border:1px solid var(--gray-200);border-radius:999px;padding:6px 8px 6px 14px;color:var(--text-placeholder)}
+.p-input span{flex:1}
+.p-note{font-size:12px;color:var(--text-muted);text-align:center;margin-top:8px}
+
+/* Project page */
+.proj-head{display:flex;gap:16px;align-items:flex-start;padding:20px 0 16px}
+.proj-head .grow{flex:1;min-width:0}
+.proj-head .client{font-weight:500;font-size:14px}
+.proj-head .meta{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:14px}
+.alert{display:flex;align-items:center;gap:16px;background:var(--upsell-bg);border:1px solid var(--orange-300);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:16px}
+.alert.ok{background:var(--green-100);border-color:var(--green-500)}
+.alert p{flex:1}
+.alert b{font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{border:1px solid var(--gray-150);border-radius:var(--radius-md);padding:16px}
+.stat small{display:block;font-size:14px;margin-bottom:4px}
+.stat strong{font-size:24px;font-weight:600;line-height:30px;display:block}
+.stat span{font-size:13px;color:var(--text-muted)}
+.tabs{display:flex;gap:20px;border-bottom:1px solid var(--gray-150);margin-bottom:12px}
+.tabs span{padding:8px 2px;color:var(--gray-700)}
+.tabs span.on{color:var(--text);box-shadow:inset 0 -2px 0 var(--orange-500)}
+.avatar{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;background:var(--gray-100);font-size:11px;font-weight:600;margin-right:8px}
+
+/* Projects list */
+.list-actions{display:flex;align-items:center;gap:8px;height:64px;border-bottom:1px solid var(--gray-100)}
+.list-actions .title{font-size:18px;font-weight:500;margin-right:8px}
+.filters{display:flex;gap:8px;margin:0 0 16px}
+.filters .right{margin-left:auto;display:flex;gap:8px}
+.group td{font-size:13px;background:#fafafa;padding:6px 12px}
+.pname{font-weight:500}
+tr.tent td{background:var(--upsell-bg)}
+
+/* Porchlight Dialog */
+.backdrop{position:fixed;inset:0;background:rgba(29,30,28,.45);display:grid;place-items:center;z-index:20}
+.dialog{width:600px;max-width:calc(100vw - 32px);background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-panel);padding:24px}
+.dialog h2{font-size:24px;line-height:30px;font-weight:500;margin-bottom:12px}
+.dialog ul{margin:12px 0 20px;padding-left:20px;line-height:24px}
+.dialog .acts{display:flex;gap:8px}
+
+/* Prototype switcher, not part of the design */
+.switch{position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:30;display:flex;gap:2px;background:#1d1e1c;padding:4px;border-radius:999px;font-size:12px}
+.switch button{border:0;background:none;color:#bbb;height:24px;padding:0 10px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.switch button.on{background:#fff;color:#1d1e1c}
+
+@media (prefers-reduced-motion:reduce){.spin,.skeleton *{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ---------- SAMPLE DATA: change these freely ---------- */
+const SAMPLE = {
+  prompt: "Website redesign for Northwind, 8 weeks from Jan 11, $48k fixed fee. Sam and Priya with me as manager.",
+  me: { name: "Audree Lapierre", initials: "AL" },
+  people: [ { name: "Sam Okafor", initials: "SO", first: "Sam" }, { name: "Priya Nair", initials: "PN", first: "Priya" } ],
+  rate: 150,
+  tasks: [ { name: "Design", share: .5625 }, { name: "Design Review", share: .125 }, { name: "Meeting", share: .125 }, { name: "Project Management", share: .1875 } ],
+  otherTasks: ["Business Development", "Marketing"],
+  existing: { client: "Lakeside Labs", code: "LAKE", name: "Lakeside Discovery", type: "Time & Materials", spent: "68.32", costs: "$5,465.60" }
+};
+
+/* Stand-in for the model: pulls obvious facts from the prompt, falls back to the sample. */
+function draftFromPrompt(text) {
+  const money = text.match(/\$\s*([\d.,]+)\s*(k)?/i);
+  const fee = money ? parseFloat(money[1].replace(/,/g, "")) * (money[2] ? 1000 : 1) : 48000;
+  const weeks = +(text.match(/(\d+)\s*weeks?/i)?.[1] || 8);
+  const client = text.match(/\bfor\s+([A-Z][\w&-]*(?:\s[A-Z][\w&-]*)*)/)?.[1] || "Northwind";
+  const what = (text.match(/^(.+?)\s+for\s/i)?.[1] || "Website redesign").toLowerCase();
+  const start = new Date(2027, 0, 11);
+  const end = new Date(start); end.setDate(end.getDate() + weeks * 7 - 3);
+  const fmt = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const code = (client.replace(/[aeiou\s]/gi, "").slice(0, 2) + "-" + what.split(" ")[0].slice(0, 3)).toUpperCase();
+  return { client, name: `${client} ${what}`, code, fee, weeks, starts: fmt(start), ends: fmt(end), hours: Math.round(fee / SAMPLE.rate) };
+}
+
+/* ---------- STATE ---------- */
+const state = { screen: 1, prompt: SAMPLE.prompt, draft: draftFromPrompt(SAMPLE.prompt), step: 1, clientOk: false, status: "tentative", confirmed: false, timers: [] };
+
+/* ---------- ICONS: paths copied from the live Harvest app ---------- */
+const SPARK = s => `<svg class="spark" width="${s}" height="${s}" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path fill="currentColor" d="M6.96 2.39c.29-.78 1.4-.78 1.68 0a10.8 10.8 0 0 0 6.37 6.37c.78.29.78 1.4 0 1.68a10.8 10.8 0 0 0-6.37 6.37c-.29.78-1.4.78-1.68 0a10.8 10.8 0 0 0-6.37-6.37c-.78-.29-.78-1.4 0-1.68a10.8 10.8 0 0 0 6.37-6.37Z"/><path fill="currentColor" d="M15 0c-.09 0-.18.04-.22.15l-.1.28a3.9 3.9 0 0 1-2.24 2.25l-.28.1c-.21.08-.21.36 0 .44l.28.1a3.9 3.9 0 0 1 2.24 2.25l.1.28c.09.2.36.2.45 0l.1-.28a3.9 3.9 0 0 1 2.24-2.25l.28-.1c.21-.08.21-.36 0-.44l-.28-.1a3.9 3.9 0 0 1-2.24-2.25l-.1-.28C15.18.04 15.09 0 15 0Z"/></svg>`;
+const NAV = [
+ '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>','<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>','<rect width="16" height="18" x="4" y="3" rx="2"/><path d="M12 6v2M12 16v2M15 8h-4c-.7 0-2 .4-2 2s1.3 2 2 2h2c.7 0 2 .4 2 2s-1.3 2-2 2H9"/>',
+ '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>','<path d="M12.7 19.2V4.1l-6.6 4.4v10.7M12.7 8.7h6.5v10.5M2.8 19.2h18.4"/>','<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>',
+ '<path d="M4.5 13.4V5.2c0-.4.3-.7.7-.7h13.6c.4 0 .7.3.7.7v13.6c0 .4-.3.7-.7.7h-6.1M4.5 17.6l2.2 1.9L12 15"/>','<rect width="16" height="18" x="4" y="3" rx="2"/><path d="M8 8h8M8 12h8M8 16h6"/>','<path d="M4 21v-3c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v3M4 3v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V3M8 7h6M8 3h8M8 21h8"/>',
+ '<circle cx="12" cy="12" r="8"/><path d="m15 10-3.4 4-1.6-1.8"/>','<path d="M18 20V10M12 20V4M6 20v-6"/>','<path d="m3 15.8 5.3-5.3 4.1 3.4L21 5.3M3 19.5h18"/>'];
+
+const nav = () => `<nav class="nav" aria-label="Main"><div class="nav-in">
+  <div class="nav-logo"><svg width="26" height="26" viewBox="0 0 26 26" aria-label="Harvest"><path fill="#fa5d00" d="M2 3h6v20H2zM18 3h6v20h-6zM10 3h2.500v8H10zM13.500 15H16v8h-2.500z"/></svg></div>
+  <button class="nav-timer" aria-label="Timer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg></button>
+  <div class="nav-more" aria-hidden="true">···</div>
+  ${NAV.map((p, i) => `<span class="nav-item${i === 5 ? " on" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span>`).join("")}
+  <div class="nav-avatar" aria-hidden="true">${SAMPLE.me.initials}</div>
+</div></nav>`;
+
+const panel = body => `<aside class="panel" aria-label="Harvest AI">
+  <div class="p-head">${SPARK(18)} Harvest AI <button class="p-new">+ New chat</button><button class="p-x" aria-label="Close Harvest AI">×</button></div>
+  <div class="p-sub"><span>Recent</span><span>Share feedback</span></div>
+  <div class="p-body" aria-live="polite">${body}</div>
+  <div class="p-foot"><div class="usage"><span>2% used</span><span>Resets Sunday, November 8 at 5:00 PM MST.</span></div>
+  <div class="p-input"><span>Ask Harvest AI…</span></div>
+  <div class="p-note">Harvest AI can make mistakes.</div></div>
+</aside>`;
+
+/* field(): an input that shows it was filled by AI. Editing it clears the mark. */
+const lbl = (text, ai) => `<div class="lbl">${text}${ai ? SPARK(12) : ""}</div>`;
+const field = (val, ai, extra = "") => `<input class="input${ai ? " ai-filled" : ""}" value="${val}" ${extra} data-ai="${ai ? 1 : 0}">`;
+
+/* ---------- FORM: screens 1 to 3 share it ---------- */
+function form({ filled, loading }) {
+  const d = state.draft, ai = filled;
+  const v = x => (filled ? x : "");
+  const tasks = [...SAMPLE.tasks.map(t => [t.name, true]), ...SAMPLE.otherTasks.map(t => [t, false])];
+  return `<div class="${loading ? "skeleton" : ""}">
+    <div class="form-row">${lbl("Client", ai)}<div>
+      <div class="inline"><select class="select${ai ? " ai-filled" : ""}" style="flex:1" aria-label="Client"><option>${filled ? (state.clientOk ? d.client : d.client + " (new client)") : "Choose a client…"}</option></select>
+      <span>or</span><button class="btn sm" type="button">+ New client</button></div></div></div>
+    <div class="form-row">${lbl("Project name", ai)}<div>${field(v(d.name), ai, 'aria-label="Project name"')}</div></div>
+    ${filled ? `<div class="form-row">${lbl("Status", true)}<div>
+      <div class="status-opts">
+        <button type="button" class="seg ${state.status === "tentative" ? "on" : ""}" data-status="tentative"><b>Tentative</b><span>Holds budget and team. No time tracking yet.</span></button>
+        <button type="button" class="seg ${state.status === "active" ? "on" : ""}" data-status="active"><b>Active</b><span>People can track time right away.</span></button>
+      </div></div></div>` : ""}
+    <div class="form-row">${lbl("Project code", ai)}<div><div class="inline"><input class="input${ai ? " ai-filled" : ""}" style="width:150px" value="${v(d.code)}" aria-label="Project code"><span>Last project code: ${SAMPLE.existing.code}</span></div>
+      <p class="hint">Optional. A code can help identify your project. You can use any combination of numbers or letters.</p></div></div>
+    <div class="form-row">${lbl("Dates", ai)}<div><div class="inline">
+      <label class="date${ai ? " ai-filled" : ""}"><small>Starts on</small><input value="${v(d.starts)}"></label><span>to</span>
+      <label class="date${ai ? " ai-filled" : ""}"><small>Ends on</small><input value="${v(d.ends)}"></label></div>
+      <p class="hint">Optional. You’ll still be able to track time outside of this date range.</p></div></div>
+    <div class="form-row">${lbl("Tags")}<div><input class="input" aria-label="Tags"><p class="hint">Optional. Categorize projects with your own labels, then filter and report by them.</p></div></div>
+    <div class="form-row">${lbl("Billing currency")}<div><select class="select" style="max-width:380px" aria-label="Billing currency"><option>Same as client — USD</option></select></div></div>
+    <div class="form-row">${lbl("Notes")}<div><textarea class="textarea" aria-label="Notes"></textarea></div></div>
+    <div class="form-row">${lbl("Permissions")}<div>
+      <label class="check"><input type="radio" name="perm" checked> Show project report to Administrators and people who manage this project</label>
+      <label class="check" style="margin-top:6px"><input type="radio" name="perm"> Show project report to everyone on this project</label></div></div>
+    <div class="form-row">${lbl("Forecast", ai)}<div><label class="check"><input type="checkbox" ${filled ? "checked" : ""}> Create this project in Forecast so you can plan your team’s time</label></div></div>
+    <hr class="divider">
+    <div class="form-row">${lbl("Project type", ai)}<div>
+      <div class="types">
+        <div class="seg ${filled ? "" : "on"}"><b>Time &amp; Materials</b><span>Bill by the hour, with billable rates</span></div>
+        <div class="seg ${filled ? "on" : ""}"><b>Fixed Fee</b><span>Bill a set price, regardless of time tracked</span></div>
+        <div class="seg"><b>Non-Billable</b><span>Not billed to a client</span></div>
+      </div>
+      <div class="sub-card">${filled ? `
+        <h3>Project fees</h3><p class="hint" style="margin:0 0 8px">Enter the amount you plan to invoice.</p>
+        <div class="money">$ <input class="input ai-filled" value="${d.fee.toLocaleString("en-US")}" aria-label="Project fees"></div>
+        <h3 style="margin-top:14px">Budget</h3><p class="hint" style="margin:0 0 8px">Set a budget to track project progress.</p>
+        <select class="select ai-filled" style="max-width:220px" aria-label="Budget"><option>Total project fees</option></select>` : `
+        <h3>Billable rates</h3><p class="hint" style="margin:0 0 8px">We need billable rates to track your project’s billable amount.</p>
+        <select class="select" style="max-width:220px" aria-label="Billable rate"><option>No billable rate</option></select>
+        <h3 style="margin-top:14px">Budget</h3><p class="hint" style="margin:0 0 8px">Set a budget to track project progress.</p>
+        <select class="select" style="max-width:220px" aria-label="Budget"><option>No budget</option></select>`}
+      </div></div></div>
+    <div class="form-row">${lbl("Tasks", ai)}<div class="t-card"><table><thead><tr><th>Assigned teammates</th><th class="num">Billable</th></tr></thead><tbody>
+      ${tasks.map(([t, on]) => `<tr><td>${t}</td><td class="num"><input type="checkbox" aria-label="${t} billable" ${filled ? (on ? "checked" : "") : "checked"}></td></tr>`).join("")}
+    </tbody></table></div></div>
+    <div class="form-row">${lbl("Team", ai)}<div class="t-card"><table><thead><tr><th>Person</th><th class="num">Manages this project</th></tr></thead><tbody>
+      <tr><td><span class="avatar">${SAMPLE.me.initials}</span>${SAMPLE.me.name}</td><td class="num"><input type="checkbox" checked aria-label="${SAMPLE.me.name} manages"></td></tr>
+      ${filled ? SAMPLE.people.map(p => `<tr><td><span class="avatar">${p.initials}</span>${p.name}</td><td class="num"><input type="checkbox" aria-label="${p.name} manages"></td></tr>`).join("") : ""}
+    </tbody></table></div></div>
+    <div style="height:32px"></div></div>`;
+}
+
+const header = () => `<div class="topbar">Projects</div>`;
+const page = (content, side = "", foot = "") => `<div class="app">${nav()}<div class="main" style="--label-w:${side ? 150 : 200}px"><div class="scroll"><div class="wrap">${content}</div></div>${foot}</div>${side}</div>`;
+const saveBar = (label, enabled, note = "") => `<div class="savebar"><button class="btn primary lg" id="save" ${enabled ? "" : "disabled"}>${label}</button><button class="btn lg" data-go="1">Cancel</button>${note ? `<span class="note">${note}</span>` : ""}</div>`;
+
+/* ---------- SCREENS ---------- */
+const SCREENS = {
+  /* 1. Entry: the live /projects AI bar, moved onto the new-project page */
+  1: () => page(`${header()}
+    <div class="title-row"><h1>New project</h1></div>
+    <form class="ai-bar" id="prompt-form">
+      <label for="prompt">Describe the project and Harvest AI will set it up</label>
+      <div class="ai-row">${SPARK(18)}<input id="prompt" value="${state.prompt.replace(/"/g, "&quot;")}" placeholder="Try: Website redesign for Northwind, 8 weeks, $48k fixed fee">
+      <button class="send" aria-label="Draft project">→</button></div>
+    </form>
+    ${form({ filled: false })}`, "", saveBar("Save project", true)),
+
+  /* 2. Drafting: panel shows the work, form shimmers */
+  2: () => page(`${header()}
+    <div class="title-row"><h1>New project</h1></div>
+    ${form({ filled: false, loading: true })}`,
+    panel(`<div class="bubble">${state.prompt}</div>
+      <p class="msg">Setting up your project.</p>
+      <ul class="steps">${["Matching the client", "Reading similar projects", "Filling in tasks, team and budget"].map((s, i) => {
+        const c = i < state.step ? "done" : i === state.step ? "now" : "";
+        return `<li class="${c}"><span class="tick">${i < state.step ? "✓" : i === state.step ? '<span class="spin"></span>' : ""}</span>${s}</li>`; }).join("")}</ul>`),
+    saveBar("Save project", false)),
+
+  /* 3. Review: the form is where you check, the panel explains */
+  3: () => {
+    const d = state.draft, tent = state.status === "tentative";
+    return page(`${header()}
+      <div class="title-row"><h1>New project</h1>${tent ? '<span class="badge tentative">Tentative</span>' : ""}</div>
+      ${form({ filled: true })}`,
+      panel(`<div class="bubble">${state.prompt}</div>
+        <p class="msg">Your draft is in the form. Fields marked ${SPARK(12)} came from me, and you can change any of them.</p>
+        ${state.clientOk
+          ? `<div class="ask done">Added ${d.client} as a new client.</div>`
+          : `<div class="ask"><p><b style="font-weight:500">I can’t find ${d.client} in your clients.</b> Should I add it?</p>
+             <div class="inline"><button class="btn sm primary" id="add-client">Add ${d.client}</button><button class="btn sm" id="pick-client">Choose a client</button></div></div>`}
+        <div><div class="p-h">From your prompt</div><div class="chips">
+          <span class="chip">Fixed fee</span><span class="chip">$${d.fee.toLocaleString("en-US")}</span><span class="chip">${d.weeks} weeks</span>${SAMPLE.people.map(p => `<span class="chip">${p.first}</span>`).join("")}<span class="chip">You manage</span></div></div>
+        <div><div class="p-h">My suggestions</div><div class="why">
+          <div><b>4 tasks</b><span>The tasks your 3 closest projects have in common.</span></div>
+          <div><b>${d.hours} planned hours</b><span>Your budget at the $${SAMPLE.rate} rate on your last fixed-fee project.</span></div>
+          <div><b>Saved as tentative</b><span>Nothing in your prompt says it’s signed. Time tracking stays off until you confirm.</span></div>
+        </div></div>`),
+      saveBar(tent ? "Create tentative project" : "Create project", state.clientOk, state.clientOk ? "" : "Answer the client question first."));
+  },
+
+  /* 4. Tentative project page */
+  4: () => projectPage(),
+
+  /* 5. Confirm dialog, over the project page */
+  5: () => {
+    const d = state.draft;
+    return projectPage() + `<div class="backdrop"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg">
+      <h2 id="dlg">Confirm ${d.name}?</h2>
+      <p>This makes the project active.</p>
+      <ul><li>You, ${SAMPLE.people.map(p => p.first).join(" and ")} can track time to it.</li><li>Forecast shows the hours as scheduled.</li><li>${SAMPLE.people.map(p => p.first).join(" and ")} get an assignment email.</li></ul>
+      <div class="acts"><button class="btn primary" id="confirm">Confirm project</button><button class="btn" data-go="4">Keep tentative</button></div>
+    </div></div>`;
+  },
+
+  /* 6. Projects list with the tentative row */
+  6: () => {
+    const d = state.draft, e = SAMPLE.existing, tent = !state.confirmed;
+    return page(`<div class="list-actions"><span class="title">Projects</span><button class="btn primary" data-go="1">+ New project</button><button class="btn">Actions</button><button class="btn">Import</button><button class="btn">Export</button></div>
+      <div style="height:16px"></div>
+      <div class="filters"><select class="select" style="width:240px" aria-label="Project filter"><option>Active and tentative (2)</option><option>Active projects</option><option>Tentative projects</option></select>
+        <div class="right"><button class="btn">Filter by client</button><button class="btn">Filter by manager</button></div></div>
+      <div class="t-card"><table><thead><tr><th>Client</th><th class="num">Budget</th><th class="num">Scheduled</th><th class="num">Spent</th><th class="num">Costs</th><th></th></tr></thead><tbody>
+        <tr class="group"><td colspan="6">${e.client}</td></tr>
+        <tr><td><span class="pname">[${e.code}] ${e.name}</span> <span class="badge neutral">${e.type}</span></td><td class="num">–</td><td class="num">–</td><td class="num">${e.spent}</td><td class="num">${e.costs}</td><td class="num"><button class="btn sm">Actions</button></td></tr>
+        <tr class="group"><td colspan="6">${d.client}</td></tr>
+        <tr class="${tent ? "tent" : ""}"><td><span class="pname">[${d.code}] ${d.name}</span> <span class="badge neutral">Fixed Fee</span> ${tent ? '<span class="badge tentative">Tentative</span>' : ""}</td><td class="num">$${d.fee.toLocaleString("en-US")}</td><td class="num">${d.hours}</td><td class="num">–</td><td class="num">–</td><td class="num">${tent ? '<button class="btn sm" data-go="5">Confirm</button>' : '<button class="btn sm">Actions</button>'}</td></tr>
+      </tbody></table></div>`);
+  }
+};
+
+function projectPage() {
+  const d = state.draft, tent = !state.confirmed;
+  return page(`<div class="topbar"><button class="back" data-go="6">← Back to Projects</button></div>
+    <div class="proj-head"><div class="grow"><div class="client">${d.client}</div><h1>[${d.code}] ${d.name}</h1>
+      <div class="meta"><span class="badge neutral">Fixed Fee</span>${tent ? '<span class="badge tentative">Tentative</span>' : '<span class="badge green">Active</span>'}<span>${d.starts} to ${d.ends}</span></div></div>
+      <button class="btn">Edit project</button><button class="btn">Actions</button></div>
+    ${tent
+      ? `<div class="alert"><p><b>This project is tentative.</b> Nobody can track time to it until you confirm it.</p><button class="btn primary" data-go="5">Confirm project</button></div>`
+      : `<div class="alert ok"><p><b>Project confirmed.</b> Your team can track time to it now.</p></div>`}
+    <div class="stats">
+      <div class="stat"><small>Planned budget</small><strong>$${d.fee.toLocaleString("en-US")}</strong><span>Fixed fee</span></div>
+      <div class="stat"><small>Planned hours</small><strong>${d.hours}</strong><span>${d.weeks} weeks</span></div>
+      <div class="stat"><small>Team</small><strong>3</strong><span>You manage</span></div>
+      <div class="stat"><small>Tracked so far</small><strong>0.00</strong><span>${tent ? "Tracking opens when confirmed" : "Tracking is open"}</span></div>
+    </div>
+    <div class="tabs"><span class="on">Tasks</span><span>Team</span></div>
+    <div class="t-card"><table><thead><tr><th>Billable tasks</th><th class="num">Planned hours</th><th class="num">Planned fees</th></tr></thead><tbody>
+      ${SAMPLE.tasks.map(t => `<tr><td>${t.name}</td><td class="num">${Math.round(d.hours * t.share)}</td><td class="num">$${Math.round(d.fee * t.share).toLocaleString("en-US")}</td></tr>`).join("")}
+    </tbody></table></div><div style="height:48px"></div>`);
+}
+
+/* ---------- RENDER AND BEHAVIOUR ---------- */
+const switcher = () => `<div class="switch" aria-label="Prototype screens">${["Entry", "Drafting", "Review", "Tentative", "Confirm", "List"].map((n, i) => `<button class="${state.screen === i + 1 ? "on" : ""}" data-go="${i + 1}">${i + 1} ${n}</button>`).join("")}</div>`;
+
+function go(n) { state.timers.forEach(clearTimeout); state.timers = []; state.screen = n; try { history.replaceState(null, "", "?screen=" + n); } catch (e) {} render(); }
+
+function runDraft() {
+  state.draft = draftFromPrompt(state.prompt); state.step = 0; state.clientOk = false; go(2);
+  [1, 2].forEach(i => state.timers.push(setTimeout(() => { state.step = i; render(); }, i * 1100)));
+  state.timers.push(setTimeout(() => go(3), 3400));
+}
+
+function render() {
+  document.getElementById("root").innerHTML = SCREENS[state.screen]() + switcher();
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = e => { e.preventDefault(); go(+b.dataset.go); });
+  document.querySelectorAll("[data-status]").forEach(b => b.onclick = () => { state.status = b.dataset.status; render(); });
+  document.querySelectorAll("[data-ai='1']").forEach(i => i.oninput = () => i.classList.remove("ai-filled"));
+  const q = id => document.getElementById(id);
+  if (q("prompt-form")) q("prompt-form").onsubmit = e => { e.preventDefault(); state.prompt = q("prompt").value.trim() || SAMPLE.prompt; runDraft(); };
+  if (q("add-client")) q("add-client").onclick = () => { state.clientOk = true; render(); };
+  if (q("pick-client")) q("pick-client").onclick = () => { state.clientOk = true; render(); };
+  if (q("save")) q("save").onclick = () => { if (state.screen === 3) { state.confirmed = state.status === "active"; go(4); } };
+  if (q("confirm")) q("confirm").onclick = () => { state.confirmed = true; go(4); };
+}
+
+state.screen = Math.min(6, Math.max(1, +new URLSearchParams(location.search).get("screen") || 1));
+render();
+</script>
+</body>
+</html>
